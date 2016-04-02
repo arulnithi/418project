@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>CuPython by ramverma92</title>
+    <title>ParaPy by ramverma92</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">CuPython</h1>
+      <h1 class="project-name">ParaPy</h1>
       <h2 class="project-tagline">It&#39;s like CUDA, but for Python</h2>
       <a href="https://github.com/ramverma92/418project" class="btn">View on GitHub</a>
       <a href="https://github.com/ramverma92/418project/zipball/master" class="btn">Download .zip</a>
@@ -53,42 +53,46 @@
 <a id="goals-and-deliverables" class="anchor" href="#goals-and-deliverables" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Goals and Deliverables</h3>
 
 <h4>
-<a id="plan-to-achieve" class="anchor" href="#plan-to-achieve" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PLAN TO ACHIEVE:</h4>
+<a id="plan-to-achieve" class="anchor" href="#plan-to-achieve" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PLAN TO ACHIEVE</h4>
 
 <p>We plan to have a completed Python module compiler which generates and compiles CUDA code for written Python code. The compiler should support arithmetic and boolean operations as well as libraries common to Python and C++.  </p>
 
 <h4>
-<a id="hope-to-achieve" class="anchor" href="#hope-to-achieve" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>HOPE TO ACHIEVE:</h4>
+<a id="hope-to-achieve" class="anchor" href="#hope-to-achieve" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>HOPE TO ACHIEVE</h4>
 
 <p>If we are able to complete the module compiler for CUDA, we plan to introduce finer level of control over the kernel calls in the compiler. We would also like to look into support for CPU parallelism by generating C++ code which uses OpenMP.</p>
 
 <h3>
 <a id="platform-choice" class="anchor" href="#platform-choice" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Platform Choice</h3>
 
-<p>We chose Python due to its simplicity and availability of multiple libraries for source code parsing. By having a module such as ParaPy, we hope to combine the simplicity of Python with the speed of C++.
-We will be using the GHC 5000 machines with NVIDIA GPUs for design verification and testing since the NVIDIA compiler (nvcc) has already been set up on the machines.</p>
+<p>We chose Python due to its simplicity and availability of multiple libraries for source code parsing. By having a module such as ParaPy, we hope to combine the simplicity of Python with the speed of C++.</p>
 
-<h3>
-<a id="schedule" class="anchor" href="#schedule" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Schedule</h3>
+<p>We will be using the GHC 5000 machines with NVIDIA GPUs for design verification and testing since the NVIDIA compiler (nvcc) has already been set up on the machines.</p>
 
-<p>April 4 - 10
--Read and understand Python libraries which support processing of Python syntax grammar
--Write the parser functions using the Python libraries as the first step for our module
-April 11 - 17
+<p>-### Schedule
+    ####April 4 - 10
+    -Read and understand Python libraries which support processing of Python syntax grammar
+    -Write the parser functions using the Python libraries as the first step for our module</p>
+
+<pre><code>####April 11 - 17
 -Generate CUDA kernel code without errors given Python function which meets basic requirements (only arithmetic operations and no function calls within a function)
 -Work on checkpoint report
-April 18 - 24
+
+####April 18 - 24
 -Compile module on the Mandelbrot function and compare speedup to standard Python implementation
--Produce graphs for comparsion 
-April 25 - 30
+-Produce graphs for comparison 
+
+####April 25 - 30
 -Add more functionality to support generic library calls for the compiler
 -Start working on generating OpenMP code if times permits
-May 1 - 7
--Finalise the module compiler and fix any bugs
--Work on report and website</p>
+####May 1 - 7
+
+-Finalize the module compiler and fix any bugs
+-Work on report and website
+</code></pre>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/ramverma92/418project">CuPython</a> is maintained by <a href="https://github.com/ramverma92">ramverma92</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/ramverma92/418project">ParaPy</a> is maintained by <a href="https://github.com/ramverma92">ramverma92</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
