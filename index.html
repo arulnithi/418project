@@ -50,8 +50,14 @@
 <h3>
 <a id="the-challenge" class="anchor" href="#the-challenge" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The Challenge</h3>
 
+<p>There are many challenges associated with the project. We will have to correctly translate Python code to C++ CUDA code. This is a challenging task given the nature of both languages. Python is dynamically typed, meaning that there is no static type information available. We will require the user to confirm to certain restrictions ( not calling nested functions, using data of a singular primitive types, declaring type information before hand). </p>
+
+<p>Another challenge is CUDA’s distinction between device memory and host memory, and also the availability of shared memory to achieve even greater speed up. Python only has one type of memory, and hence we need to identify when and how such memory needs to be allocated. We plan to take care of device and host memory transfers, and disregard potential speedups achieved from shared memory optimizations. </p>
+
 <h3>
 <a id="resources" class="anchor" href="#resources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Resources</h3>
+
+<p>We are planning to use several built in modules that allow for source code manipulation.The <em>Inspect module</em> provides several useful functions to help get information about live objects such as classes and functions and retrieve their source code. The <em>AST module</em> then allows us to generate an abstract syntax tree from this Python source code. We would then proceed to generate compliable C++ CUDA code using the above information.</p>
 
 <h3>
 <a id="goals-and-deliverables" class="anchor" href="#goals-and-deliverables" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Goals and Deliverables</h3>
