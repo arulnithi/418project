@@ -32,34 +32,35 @@ def foo(arg1,arg2):
 #blah blah
 def foo(arg1=2,arg2=1):
     #do something with args
-    if 1:
+    if arg2==1:
     	a = arg1 + arg2
+    # elif arg2 == 2:
+    # 	a = 1
+    # else:
+    # 	a += 1
     return a
 
 
 from parser import *
 
 parser = Parser(foo)
-#parser.printArgs()
-code = parser.originalSourceCode
+# parser.printArgs()
 parser.checkTree()
-# parser.printTree()
+parser.printTree()
 parser.parseArguments()
+parser.parseBody()
+
+# print parser.bodyList
 
 
-print parser.argValueList, parser.argList
 
 # for node in ast.iter_child_nodes(parser.astTree):
-# 	# print ast.iter_fields(node)
-# 	# print node._fields
-# 	for arg in node.args.args:
-# 		print "J",arg.id, type(arg.id)
-# 		print arg.ctx
-# 	for gg in node.args.defaults:
-# 		print gg.n
-# 	# for stmt in node.body:
-# 	# 	print stmt
-
+# 	for stmt in node.body:
+# 		if isinstance(stmt, ast.If):	
+# 			print stmt.test.ops
+# 			print isinstance(stmt.test.ops[0],ast.Eq)
+# 		if isinstance(stmt, ast.Return):
+# 			print stmt.value
 
 
 
