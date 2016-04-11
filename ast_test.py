@@ -46,19 +46,18 @@ from parser import *
 parser = Parser(foo)
 # parser.printArgs()
 parser.checkTree()
-parser.printTree()
+# parser.printTree()
 parser.parseArguments()
 parser.parseBody()
 
-# print parser.bodyList
+print parser.bodyList
 
 
 
 # for node in ast.iter_child_nodes(parser.astTree):
 # 	for stmt in node.body:
 # 		if isinstance(stmt, ast.If):	
-# 			print stmt.test.ops
-# 			print isinstance(stmt.test.ops[0],ast.Eq)
+# 			print isinstance(stmt.body[0], ast.Assign)
 # 		if isinstance(stmt, ast.Return):
 # 			print stmt.value
 

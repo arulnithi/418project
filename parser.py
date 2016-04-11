@@ -99,7 +99,7 @@ class Parser:
 
 
 #====================================================================
-#Operations parser
+#Operations parser(x2) / BinOps parser / UnaryOp parser
 #====================================================================
 
 
@@ -117,8 +117,61 @@ class Parser:
   	elif isinstance(body, ast.GtE):
   		return ">="
   	else:
-  		raise Exception("Operation not supported: %s"%(body))
+  		raise Exception("Operation(ops) not supported: %s"%(body))
 
+
+  def opParser(self, body):
+  	if isinstance(body, ast.Add):
+  		return "+"
+  	elif isinstance(body, ast.Sub):
+  		return "-"
+  	elif isinstance(body, ast.Mult):
+  		return "*"
+  	elif isinstance(body, ast.Div):
+  		return "/"
+  	elif isinstance(body, ast.Mod):
+  		return "%"
+  	elif isinstance(body, ast.Pow):
+  		return "**"
+  	elif isinstance(body, ast.LShift):
+  		return "<<"
+  	elif isinstance(body, ast.RShift):
+  		return ">>"
+  	elif isinstance(body, ast.BitOr):
+  		return "|"
+  	elif isinstance(body, ast.BitXor):
+  		return "^"
+  	elif isinstance(body, ast.BitAnd):
+  		return "&"
+  	else:
+  		raise Exception("Operation(op) not supported: %s"%(body))
+
+
+  def binOpsParser(self, body):
+  	returnString = ""
+  	#left
+  	returnString += self.bodyHandlerLiterals(body.left)[0]
+  	#op
+  	returnString += self.opParser(body.op)
+  	#right
+  	returnString += self.bodyHandlerLiterals(body.right)[0]
+  	return returnString
+
+
+  def unaryOpParser(self, body):
+  	returnString = ""
+  	#op
+  	if isinstance(body.op, ast.UAdd):
+  		returnString += "+"
+  	elif isinstance(body.op, ast.USub):
+  		returnString += "-"
+  	elif isinstance(body.op, ast.Invert):
+  		returnString += "~"
+  	else:
+  		raise Exception("Unary Operation not supported: %s"%(body.op))
+  	#operand
+  	returnString += self.bodyHandlerLiterals(body.operand)[0]
+  	return returnString
 
 #====================================================================
 #Helper functions for parsing the body
@@ -208,6 +261,8 @@ class Parser:
   	else:
   		raise Exception("If test type Unknown: %s"%(body.test))
   	#body
+  	for bodies in body.body:
+  		returnList.append(self.bodyHandler(bodies))
   	#orelse
   	return returnList
 
@@ -217,6 +272,26 @@ class Parser:
   	returnList.append("")
   	returnList[0] += "return "
   	returnList[0] += self.bodyHandlerLiterals(body.value)[0]
+  	return returnList
+
+
+  def bodyHandlerAssign(self, body):
+  	returnList = []
+  	#targets (list of target)
+  	for target in body.targets:
+  		if isinstance(target, ast.BinOp):
+  			returnList.append(self.binOpsParser(target))
+  		elif isinstance(target, ast.Name) or isinstance(target, ast.Str):
+  			returnList.append(self.bodyHandlerLiterals(target)[0])
+  		else:
+  			raise Exception("Assignment not supported for target: %s"%(target))
+  	#equal sign
+  	returnList[0] += "="
+  	#value (single node, can be Name, Num, BinOp)
+  	if isinstance(body.value, ast.BinOp):
+  		returnList[0] += self.binOpsParser(body.value)
+  	elif isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num):
+  		returnList[0] += self.bodyHandlerLiterals(body.value)[0]
   	return returnList
 
 #====================================================================
@@ -235,13 +310,13 @@ class Parser:
   	# elif isinstance(body, ast.For):
   	# 	self.bodyHandlerFor(body)
 
-  	# #different assign types
-  	# elif isinstance(body, ast.Assign):
-  	# 	self.bodyHandlerAssign(body)
+  	#different assign types
+  	elif isinstance(body, ast.Assign):
+  		return self.bodyHandlerAssign(body)
   	# elif isinstance(body, ast.AugAssign):
   	# 	self.bodyHandlerAugAssign(body)
 
-  	# #return body
+  	#return body
    	elif isinstance(body, ast.Return):
   		return self.bodyHandlerReturn(body)
 
