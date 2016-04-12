@@ -223,6 +223,10 @@ class Parser:
   		else:
   			raise Exception("Literal List's ctx not supported: %s"%(body.ctx))
 
+  	elif isinstance(body, ast.Subscript):
+  		returnString += self.bodyHandlerSubscript(body)
+  		return (returnString, None)
+
     #Unknown Literal
   	else:
   		raise Exception("Literal not supported: %s"%(body))
@@ -249,6 +253,29 @@ class Parser:
   	returnString += ")"
   	return returnString
 
+
+  def bodyHandlerSubscript(self, body):
+  	returnString = ""
+  	#value (usually a name)
+  	if isinstance(body.value, ast.Name):
+  		returnString += self.bodyHandlerLiterals(body.value)[0]
+  	else:
+  		raise Exception("Subscript value not supported: %s"%(body.value))
+  	#slice ( Index, Slice, ExtSlice(not supported) )
+  	returnString += "["
+  	if isinstance(body.slice, ast.Index):
+  		returnString += self.bodyHandlerLiterals(body.slice.value)[0]
+  	elif isinstance(body.slice, ast.Slice):
+  		returnString += self.bodyHandlerLiterals(body.slice.lower)[0]
+  		returnString += ":"
+  		returnString += self.bodyHandlerLiterals(body.slice.upper)[0]
+  		if body.slice.step != None:
+  			returnString += ":" + self.bodyHandlerLiterals(body.slice.step)[0]
+  	else:
+  		raise Exception("Subscript.slice not supported: %s"%(body.slice))
+  	returnString += "]"
+  	#ctx (not needed for noe)
+  	return returnString
 
 #====================================================================
 #Handlers for Parsing the body
@@ -318,6 +345,8 @@ class Parser:
   			returnList.append(self.binOpsParser(target))
   		elif isinstance(target, ast.Name) or isinstance(target, ast.Str):
   			returnList.append(self.bodyHandlerLiterals(target)[0])
+  		elif isinstance(target, ast.Subscript):
+  			returnList.append(self.bodyHandlerSubscript(target))
   		else:
   			raise Exception("Assignment not supported for target: %s"%(target))
   	#equal sign
@@ -327,6 +356,10 @@ class Parser:
   		returnList[0] += self.binOpsParser(body.value)
   	elif isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num) or isinstance(body.value, ast.List):
   		returnList[0] += self.bodyHandlerLiterals(body.value)[0]
+  	elif isinstance(body.value, ast.Subscript):
+  		returnList[0] += self.bodyHandlerSubscript(body.value)
+  	else:
+  		raise Exception("Assign.value not supported %s"%(body.value))
   	returnList[0] += ";"
   	return returnList[0]
 
@@ -334,13 +367,18 @@ class Parser:
   def bodyHandlerAugAssign(self, body):
   	returnList = []
   	#target
-  	returnList.append(self.bodyHandlerLiterals(body.target)[0])
+  	if isinstance(body.target, ast.Subscript):
+  		returnList.append(self.bodyHandlerSubscript(body.target))
+  	else:
+  		returnList.append(self.bodyHandlerLiterals(body.target)[0])
   	#op + equals sign
   	returnList[0] += self.opParser(body.op)+"="
   	#value
   	returnList[0] += (self.bodyHandlerLiterals(body.value)[0])
   	returnList[0] += ";"
   	return returnList[0]
+
+
 
 
   def bodyHandlerWhile(self, body):
@@ -451,7 +489,7 @@ class Parser:
    	elif isinstance(body, ast.Return):
   		return self.bodyHandlerReturn(body)
 
-  	# #print
+  	# #print (hard to support, need typechecker somehow)
    # 	elif isinstance(body, ast.Print):
   	# 	self.bodyHandlerPrint(body)
 

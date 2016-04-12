@@ -30,7 +30,7 @@ def foo(arg1,arg2):
 
 #TESTTING ACTUAL
 #blah blah
-def foo(arg1=2,arg2=1):
+def foo(arg1,arg2):
   #do something with args
   # if arg2<1:
   # 	a = arg1 + arg2
@@ -42,16 +42,15 @@ def foo(arg1=2,arg2=1):
   # 	a += 1
   # a += 1
   # return a
-  if arg1<1:
-  	if arg2 <1:
-  		arg2 += 1
+  for x in xrange(len(arg1)):
+  	arg1[x] += arg2[x]
 
 from parser import *
 
 parser = Parser(foo)
 # parser.printArgs()
 parser.checkTree()
-parser.printTree()
+# parser.printTree()
 parser.parseArguments()
 parser.parseBody()
 
@@ -61,8 +60,8 @@ print parser.bodyList
 
 # for node in ast.iter_child_nodes(parser.astTree):
 # 	for stmt in node.body:
-# 		if isinstance(stmt, ast.Assign):	
-# 			print stmt.n
+# 		if isinstance(stmt, ast.For):	
+# 			print stmt.body[0].targets[0].slice.value
 # 		if isinstance(stmt, ast.Return):
 # 			print stmt.value
 
