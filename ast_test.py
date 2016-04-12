@@ -31,25 +31,27 @@ def foo(arg1,arg2):
 #TESTTING ACTUAL
 #blah blah
 def foo(arg1=2,arg2=1):
-    #do something with args
-    if arg2<1:
-    	a = arg1 + arg2
-    elif arg2 == 2:
-    	a = 1
-    elif arg2 == 2:
-    	a = 1
-    else:
-    	a += 1
-    a += 1
-    return a
-
+  #do something with args
+  # if arg2<1:
+  # 	a = arg1 + arg2
+  # elif arg2 == 2:
+  # 	a = 1
+  # elif arg2 == 2:
+  # 	a = 1
+  # else:
+  # 	a += 1
+  # a += 1
+  # return a
+  if arg1<1:
+  	if arg2 <1:
+  		arg2 += 1
 
 from parser import *
 
 parser = Parser(foo)
 # parser.printArgs()
 parser.checkTree()
-# parser.printTree()
+parser.printTree()
 parser.parseArguments()
 parser.parseBody()
 
@@ -57,12 +59,12 @@ print parser.bodyList
 
 
 
-for node in ast.iter_child_nodes(parser.astTree):
-	for stmt in node.body:
-		if isinstance(stmt, ast.If):	
-			print len(stmt.orelse)
-		if isinstance(stmt, ast.Return):
-			print stmt.value
+# for node in ast.iter_child_nodes(parser.astTree):
+# 	for stmt in node.body:
+# 		if isinstance(stmt, ast.Assign):	
+# 			print stmt.n
+# 		if isinstance(stmt, ast.Return):
+# 			print stmt.value
 
 
 
