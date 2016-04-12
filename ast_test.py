@@ -32,12 +32,15 @@ def foo(arg1,arg2):
 #blah blah
 def foo(arg1=2,arg2=1):
     #do something with args
-    if arg2==1:
+    if arg2<1:
     	a = arg1 + arg2
-    # elif arg2 == 2:
-    # 	a = 1
-    # else:
-    # 	a += 1
+    elif arg2 == 2:
+    	a = 1
+    elif arg2 == 2:
+    	a = 1
+    else:
+    	a += 1
+    a += 1
     return a
 
 
@@ -54,15 +57,12 @@ print parser.bodyList
 
 
 
-# for node in ast.iter_child_nodes(parser.astTree):
-# 	for stmt in node.body:
-# 		if isinstance(stmt, ast.If):	
-# 			print isinstance(stmt.body[0], ast.Assign)
-# 		if isinstance(stmt, ast.Return):
-# 			print stmt.value
-
-
-
+for node in ast.iter_child_nodes(parser.astTree):
+	for stmt in node.body:
+		if isinstance(stmt, ast.If):	
+			print len(stmt.orelse)
+		if isinstance(stmt, ast.Return):
+			print stmt.value
 
 
 

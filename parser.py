@@ -247,10 +247,13 @@ class Parser:
 #====================================================================
 
 
-  def bodyHandlerIf(self, body):
+  def bodyHandlerIf(self, body, num):
   	returnList = []
   	returnList.append("")
-  	returnList[0] += "if "
+  	if num==0:
+  		returnList[0] += "if ("
+  	else:
+  		returnList[0] += "else if ("
   	#test
   	if isinstance(body.test, ast.Compare):
   		returnList[0] += (self.bodyHandlerCompare(body.test))
@@ -260,10 +263,22 @@ class Parser:
   		returnList[0] += ((self.bodyHandlerLiterals(body.test)[0]))
   	else:
   		raise Exception("If test type Unknown: %s"%(body.test))
+  	returnList[0] += ") {"
   	#body
   	for bodies in body.body:
   		returnList.append(self.bodyHandler(bodies))
+  	returnList.append("}")
   	#orelse
+  	if len(body.orelse) > 0:
+  		#else if case
+  		if isinstance(body.orelse[0], ast.If):
+  			tempList = self.bodyHandlerIf(body.orelse[0],1)
+  		#last case
+  		else:
+  			tempList = ["else {"]
+  			tempList.append(self.bodyHandler(body.orelse[0]))
+  			tempList.append("}")
+  		returnList = returnList + tempList
   	return returnList
 
 
@@ -272,6 +287,7 @@ class Parser:
   	returnList.append("")
   	returnList[0] += "return "
   	returnList[0] += self.bodyHandlerLiterals(body.value)[0]
+  	returnList[0] += ";"
   	return returnList
 
 
@@ -292,6 +308,18 @@ class Parser:
   		returnList[0] += self.binOpsParser(body.value)
   	elif isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num):
   		returnList[0] += self.bodyHandlerLiterals(body.value)[0]
+  	returnList[0] += ";"
+  	return returnList
+
+
+  def bodyHandlerAugAssign(self, body):
+  	returnList = []
+  	#target
+  	returnList.append(self.bodyHandlerLiterals(body.target)[0])
+  	#op + equals sign
+  	returnList[0] += self.opParser(body.op)+"="
+  	#value
+  	returnList[0] += (self.bodyHandlerLiterals(body.value)[0])
   	return returnList
 
 #====================================================================
@@ -304,7 +332,7 @@ class Parser:
   def bodyHandler(self,body):
   	#different loop types
   	if isinstance(body, ast.If):
-  		return self.bodyHandlerIf(body)
+  		return self.bodyHandlerIf(body,0)
   	# elif isinstance(body, ast.While):
   	# 	self.bodyHandlerWhile(body)
   	# elif isinstance(body, ast.For):
@@ -313,8 +341,8 @@ class Parser:
   	#different assign types
   	elif isinstance(body, ast.Assign):
   		return self.bodyHandlerAssign(body)
-  	# elif isinstance(body, ast.AugAssign):
-  	# 	self.bodyHandlerAugAssign(body)
+  	elif isinstance(body, ast.AugAssign):
+  		return self.bodyHandlerAugAssign(body)
 
   	#return body
    	elif isinstance(body, ast.Return):
@@ -339,6 +367,11 @@ class Parser:
   	for node in ast.iter_child_nodes(self.astTree):
   		#pass it the handler
 		for body in node.body:
-			self.bodyList.append( self.bodyHandler(body)   )
-			#need to recurse outwards/inwards for bodies within bodies 	 
+			#unpack if If_
+			if (body, ast.If):
+				for l in self.bodyHandler(body):
+					self.bodyList.append(l)
+			else:
+				self.bodyList.append(self.bodyHandler(body))
+ 
 
