@@ -6,7 +6,7 @@ returns the breakdown of the function needed to write a CUDA kernel
 #Libraries needed
 import ast
 import inspect
-
+import symtable
 
 #Parser class
 class Parser:
@@ -18,26 +18,43 @@ class Parser:
 #====================================================================
 
   #Parser initilizer
-  def __init__(self, function):
-    #Gives the function name
-    self.functionName = function.__name__
-    #gives the source code as a string
-    self.originalSourceCode = inspect.getsource(function)
-    #gives the source as a list, every line is an element
-    self.listSourceCode = inspect.getsourcelines(function)[0]
-    #gives the starting line number of function in file
-    self.startingLineNumber = inspect.getsourcelines(function)[1]
-    #gives the description of function which is written as comments on top
-    self.description = inspect.getcomments(function)
-    #gives Python source file location of the function
-    self.locationOfFolder = inspect.getsourcefile(function)
-    #turn the code into an AST
-    self.astTree = ast.parse(self.originalSourceCode)
-    #input arguments list
-    self.argList = []
-    self.argValueList = []
-    #list of the complete body
-    self.bodyList = []
+  def __init__(self, *args):
+  	function = args[0]
+  	#Gives the function name
+  	self.functionName = function.__name__
+  	#gives the source code as a string
+  	self.originalSourceCode = inspect.getsource(function)
+  	#gives the source as a list, every line is an element
+  	self.listSourceCode = inspect.getsourcelines(function)[0]
+  	#gives the starting line number of function in file
+  	self.startingLineNumber = inspect.getsourcelines(function)[1]
+  	#gives the description of function which is written as comments on top
+  	self.description = inspect.getcomments(function)
+  	#gives Python source file location of the function
+  	self.locationOfFolder = inspect.getsourcefile(function)
+  	#turn the code into an AST
+  	self.astTree = ast.parse(self.originalSourceCode)
+  	#input arguments list
+  	self.argList = []
+  	self.argValueList = args[1:]
+  	#list of the complete body
+  	self.bodyList = []
+  	#local variables list 
+  	self.localVariablesList = []
+  	#for the first line
+  	self.firstLineOfFunction = "void " + self.functionName + "("
+  	#already type casted variables
+  	self.typeCastedList = []
+  	self.returnType = ""
+
+  	#CALLING all functions needed
+  	self.checkTree()
+  	self.parseArguments()
+  	self.typeCastedList = self.argList
+  	self.parseLocalVariables()
+  	self.parseBody()
+  	self.parseFirstLine()
+  	self.wrapper()
 
 
   #Prints all arguments of the kernel
@@ -78,7 +95,7 @@ class Parser:
 
 
 #====================================================================
-#Parsing the input arguments
+#Parsing the input arguments / local variables
 #====================================================================
 
   #parses input arguments to function, 
@@ -96,6 +113,15 @@ class Parser:
   		self.argValueList.append(None)
   	self.argValueList = self.argValueList[::-1]
 
+
+  #call only after parsing arguments
+  #not exhaustive
+  def parseLocalVariables(self):
+  	table = symtable.symtable(self.originalSourceCode, "string", "exec")
+  	tupleOfArgs = table.get_children()[0].get_locals()
+  	for arg in tupleOfArgs:
+  		if arg not in self.argList:
+  			self.localVariablesList.append(arg)
 
 
 #====================================================================
@@ -334,6 +360,16 @@ class Parser:
   	returnList[0] += "return "
   	returnList[0] += self.bodyHandlerLiterals(body.value)[0]
   	returnList[0] += ";"
+  	#for the firstLine
+  	if self.returnType == "":
+	  	if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num):
+	  		self.returnType += "int "
+	  	elif isinstance(body.value, ast.List):
+	  		self.returnType += "int* "
+	  	elif isinstance(body.value, ast.Str):
+	  		self.returnType += "char"
+	  	else:
+	  		raise Exception("Return type not supported %s"%(body.value))
   	return returnList[0]
 
 
@@ -342,8 +378,26 @@ class Parser:
   	#targets (list of target)
   	for target in body.targets:
   		if isinstance(target, ast.BinOp):
-  			returnList.append(self.binOpsParser(target))
-  		elif isinstance(target, ast.Name) or isinstance(target, ast.Str):
+  			if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num):
+  				if self.binOpsParser(target) not in self.typeCastedList:
+  					returnList.append("int ")
+  					returnList[0] += (self.binOpsParser(target))
+  					self.typeCastedList.append(self.binOpsParser(target))
+  				else:
+  					returnList.append(self.binOpsParser(target))
+  			else:
+  				returnList.append(self.binOpsParser(target))
+  		elif isinstance(target, ast.Name):
+  			if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num):
+	  			if self.bodyHandlerLiterals(target)[0] not in self.typeCastedList:
+	  				returnList.append("int ")
+	  				returnList[0] += (self.bodyHandlerLiterals(target)[0])
+	  				self.typeCastedList.append(self.bodyHandlerLiterals(target)[0])
+	  			else:
+	  				returnList.append(self.bodyHandlerLiterals(target)[0])
+  			else:
+  				returnList.append(self.bodyHandlerLiterals(target)[0])
+  		elif isinstance(target, ast.Str):
   			returnList.append(self.bodyHandlerLiterals(target)[0])
   		elif isinstance(target, ast.Subscript):
   			returnList.append(self.bodyHandlerSubscript(target))
@@ -515,4 +569,38 @@ class Parser:
 				else:
 					self.bodyList.append(self.bodyHandler(body))
  
+
+
+#====================================================================
+#Handler for first+last line of function
+#====================================================================
+
+  def parseFirstLine(self):
+  	for x in xrange(len(self.argValueList)):
+  		if x != 0:
+  			self.firstLineOfFunction += ","
+  		if type(self.argValueList[x]).__name__ == "list":
+  			self.firstLineOfFunction += "int*" + " " + self.argList[x]
+  		else:
+  			self.firstLineOfFunction += type(self.argValueList[x]).__name__ + " " + self.argList[x]
+  	self.firstLineOfFunction += ") {"
+
+
+
+#====================================================================
+#Wrapper
+#====================================================================
+
+  def wrapper(self):
+  	#changing return type
+  	if self.returnType != "":
+  		self.firstLineOfFunction = self.returnType + self.firstLineOfFunction[5:]
+  	#adding new and last line
+  	newList = [self.firstLineOfFunction]
+  	newList.append(self.bodyList)
+  	newList.append("}")
+  	self.bodyList = newList
+
+
+
 
