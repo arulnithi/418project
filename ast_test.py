@@ -1,32 +1,37 @@
+import math
+
 #TESTTING ACTUAL
 #blah blah
 def foo(arg1,arg2):
-  #do something with args
-  # if arg2<1:
-  # 	a = arg1 + arg2
-  # elif arg2 == 2:
-  # 	a = 1
-  # elif arg2 == 2:
-  # 	a = 1
-  # else:
-  # 	a += 1
-  #c = []
-  a = 1
-  b = 1
-  arg1 = 1
-  a = 2
-  c = []
-  return c
+  #a = cos(0.5)
+  if arg1 > 1:
+  	arg2 += 1
+  else:
+  	arg1 -= 1
+  return arg1+arg2
 
 
 from parser import *
+from formatter import *
 
 #should not have default option i guess
+#int only
+#only can declare ints 
+#(handle calls for math)
+#lists declared outside
+
+#python to c ffi
+
+
+
+#TESTING
 parser = Parser(foo,1,2)
-# parser.printArgs()
-# parser.printTree()
 
 
-print parser.bodyList
+# print parser.bodyList
+# print parser.fileName
 
 
+code = Formatter(parser, 'CPP')
+code.formatCPP(code.originalBodyList)
+print code.codeString

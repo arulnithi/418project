@@ -1,6 +1,8 @@
 """
 The Parse class takes in a function and 
-returns the breakdown of the function needed to write a CUDA kernel
+returns the breakdown of the function needed to write a C function.
+
+The bodyList is given to the Formatter class to generate a C-style code.
 """
 
 #Libraries needed
@@ -32,6 +34,7 @@ class Parser:
   	self.description = inspect.getcomments(function)
   	#gives Python source file location of the function
   	self.locationOfFolder = inspect.getsourcefile(function)
+  	self.fileName = self.locationOfFolder.split("/")[-1]
   	#turn the code into an AST
   	self.astTree = ast.parse(self.originalSourceCode)
   	#input arguments list
@@ -55,6 +58,10 @@ class Parser:
   	self.parseBody()
   	self.parseFirstLine()
   	self.wrapper()
+
+  	#PRINTABLE function call
+  	#self.printArgs()
+  	#self.printTree()
 
 
   #Prints all arguments of the kernel
@@ -358,7 +365,10 @@ class Parser:
   	returnList = []
   	returnList.append("")
   	returnList[0] += "return "
-  	returnList[0] += self.bodyHandlerLiterals(body.value)[0]
+  	if isinstance(body.value, ast.BinOp):
+  		returnList[0] += self.binOpsParser(body.value)
+  	else:
+  		returnList[0] += self.bodyHandlerLiterals(body.value)[0]
   	returnList[0] += ";"
   	#for the firstLine
   	if self.returnType == "":
@@ -369,7 +379,8 @@ class Parser:
 	  	elif isinstance(body.value, ast.Str):
 	  		self.returnType += "char"
 	  	else:
-	  		raise Exception("Return type not supported %s"%(body.value))
+	  		self.returnType += "int "
+	  		#raise Exception("Return type not supported %s"%(body.value))
   	return returnList[0]
 
 
