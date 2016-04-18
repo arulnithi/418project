@@ -216,53 +216,57 @@ class Parser:
   #Handles literals including Num, Str, List, Name
   #returns tuple of string of Literal and possible ctx(Name)
   def bodyHandlerLiterals(self, body):
-  	returnString = ""
+    returnString = ""
 
   	#Name
-  	if isinstance(body, ast.Name):
-  		returnString += body.id
-  		if isinstance(body.ctx, ast.Load):
-  			return (returnString, "Load")
-  		elif isinstance(body.ctx, ast.Store):
-  			return (returnString, "Store")
-  		else:
-  			raise Exception("Literal Name's ctx not supported: %s"%(body.ctx))
+    if isinstance(body, ast.Name):
+      returnString += body.id
+      if isinstance(body.ctx, ast.Load):
+        return (returnString, "Load")
+      elif isinstance(body.ctx, ast.Store):
+        return (returnString, "Store")
+      else:
+        raise Exception("Literal Name's ctx not supported: %s"%(body.ctx))
 
   	#Num
-  	elif isinstance(body, ast.Num):
-  		returnString += str(body.n)
-  		return (returnString, None)
+    elif isinstance(body, ast.Num):
+      returnString += str(body.n)
+      return (returnString, None)
 
   	#Str
-  	elif isinstance(body, ast.Str):
-  		returnString += body.s
-  		return (returnString, None)
+    elif isinstance(body, ast.Str):
+      returnString += body.s
+      return (returnString, None)
 
   	#List
-  	elif isinstance(body, ast.List):
-  		returnString += '['
-  		count = 0
-  		if len(body.elts) > 0:
-	  		for value in body.elts:
-	  			if count != 0:
-	  				returnString += ','
-	  			returnString += str(self.bodyHandlerLiterals(value)[0])
-	  			count += 1
-  		returnString += ']'
-  		if isinstance(body.ctx, ast.Load):
-  			return (returnString, "Load")
-  		elif isinstance(body.ctx, ast.Store):
-  			return (returnString, "Store")
-  		else:
-  			raise Exception("Literal List's ctx not supported: %s"%(body.ctx))
+    elif isinstance(body, ast.List):
+      returnString += '['
+      count = 0
+      if len(body.elts) > 0:
+        for value in body.elts:
+          if count != 0:
+            returnString += ','
+          returnString += str(self.bodyHandlerLiterals(value)[0])
+          count += 1
+      returnString += ']'
+      if isinstance(body.ctx, ast.Load):
+        return (returnString, "Load")
+      elif isinstance(body.ctx, ast.Store):
+        return (returnString, "Store")
+      else:
+        raise Exception("Literal List's ctx not supported: %s"%(body.ctx))
 
-  	elif isinstance(body, ast.Subscript):
-  		returnString += self.bodyHandlerSubscript(body)
-  		return (returnString, None)
+    elif isinstance(body, ast.Subscript):
+      returnString += self.bodyHandlerSubscript(body)
+      return (returnString, None)
+    
+    elif isinstance(body, ast.BinOp):
+      returnString += self.binOpsParser(body)
+      return (returnString, None)
 
     #Unknown Literal
-  	else:
-  		raise Exception("Literal not supported: %s"%(body))
+    else:
+      raise Exception("Literal not supported: %s"%(body))
 
 
   #not handling more than 1 comparison
@@ -279,12 +283,16 @@ class Parser:
   
   #only 1 argument allowed for now
   def bodyHandlerCall(self, body):
-  	returnString = ""
-  	returnString += self.bodyHandlerLiterals(body.func)[0]
-  	returnString += "("
-  	returnString += self.bodyHandlerLiterals(body.args[0])[0]
-  	returnString += ")"
-  	return returnString
+    returnString = ""
+    returnString += self.bodyHandlerLiterals(body.func)[0]
+    returnString += "("
+    for count in xrange(len(body.args)):
+      if count != 0:
+        returnString += ","
+      returnString += self.bodyHandlerLiterals(body.args[count])[0]
+    # returnString += self.bodyHandlerLiterals(body.args[0])[0]
+    returnString += ")"
+    return returnString
 
 
   def bodyHandlerSubscript(self, body):
@@ -373,60 +381,73 @@ class Parser:
   	#for the firstLine
   	if self.returnType == "":
 	  	if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num):
-	  		self.returnType += "int "
+	  		self.returnType += "float "
 	  	elif isinstance(body.value, ast.List):
-	  		self.returnType += "int* "
+	  		self.returnType += "float* "
 	  	elif isinstance(body.value, ast.Str):
 	  		self.returnType += "char"
 	  	else:
-	  		self.returnType += "int "
+	  		self.returnType += "float "
 	  		#raise Exception("Return type not supported %s"%(body.value))
   	return returnList[0]
 
 
   def bodyHandlerAssign(self, body):
-  	returnList = []
+    returnList = []
   	#targets (list of target)
-  	for target in body.targets:
-  		if isinstance(target, ast.BinOp):
-  			if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num):
-  				if self.binOpsParser(target) not in self.typeCastedList:
-  					returnList.append("int ")
-  					returnList[0] += (self.binOpsParser(target))
-  					self.typeCastedList.append(self.binOpsParser(target))
-  				else:
-  					returnList.append(self.binOpsParser(target))
-  			else:
-  				returnList.append(self.binOpsParser(target))
-  		elif isinstance(target, ast.Name):
-  			if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num):
-	  			if self.bodyHandlerLiterals(target)[0] not in self.typeCastedList:
-	  				returnList.append("int ")
-	  				returnList[0] += (self.bodyHandlerLiterals(target)[0])
-	  				self.typeCastedList.append(self.bodyHandlerLiterals(target)[0])
-	  			else:
-	  				returnList.append(self.bodyHandlerLiterals(target)[0])
-  			else:
-  				returnList.append(self.bodyHandlerLiterals(target)[0])
-  		elif isinstance(target, ast.Str):
-  			returnList.append(self.bodyHandlerLiterals(target)[0])
-  		elif isinstance(target, ast.Subscript):
-  			returnList.append(self.bodyHandlerSubscript(target))
-  		else:
-  			raise Exception("Assignment not supported for target: %s"%(target))
+    for target in body.targets:
+      if isinstance(target, ast.BinOp):
+        if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num):
+          if self.binOpsParser(target) not in self.typeCastedList:
+            returnList.append("float ")
+            returnList[0] += (self.binOpsParser(target))
+            self.typeCastedList.append(self.binOpsParser(target))
+          else:
+            returnList.append(self.binOpsParser(target))
+        else:
+          returnList.append(self.binOpsParser(target))
+
+      elif isinstance(target, ast.Name):
+        if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num) or isinstance(body.value, ast.BinOp):
+          if self.bodyHandlerLiterals(target)[0] not in self.typeCastedList:
+            returnList.append("float ")
+            returnList[0] += (self.bodyHandlerLiterals(target)[0])
+            self.typeCastedList.append(self.bodyHandlerLiterals(target)[0])
+          else:
+            returnList.append(self.bodyHandlerLiterals(target)[0])
+        else:
+         returnList.append(self.bodyHandlerLiterals(target)[0])
+
+      elif isinstance(target, ast.Str):
+        returnList.append(self.bodyHandlerLiterals(target)[0])
+
+      elif isinstance(target, ast.Subscript):
+        returnList.append(self.bodyHandlerSubscript(target))
+      
+      else:
+        raise Exception("Assignment not supported for target: %s"%(target))
+
   	#equal sign
-  	returnList[0] += "="
+    returnList[0] += "="
+
   	#value (single node, can be Name, Num, BinOp)
-  	if isinstance(body.value, ast.BinOp):
-  		returnList[0] += self.binOpsParser(body.value)
-  	elif isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num) or isinstance(body.value, ast.List):
-  		returnList[0] += self.bodyHandlerLiterals(body.value)[0]
-  	elif isinstance(body.value, ast.Subscript):
-  		returnList[0] += self.bodyHandlerSubscript(body.value)
-  	else:
-  		raise Exception("Assign.value not supported %s"%(body.value))
-  	returnList[0] += ";"
-  	return returnList[0]
+    if isinstance(body.value, ast.BinOp):
+      returnList[0] += self.binOpsParser(body.value)
+
+    elif isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num) or isinstance(body.value, ast.List):
+      returnList[0] += self.bodyHandlerLiterals(body.value)[0]
+
+    elif isinstance(body.value, ast.Subscript):
+      returnList[0] += self.bodyHandlerSubscript(body.value)
+    
+    elif isinstance(body.value, ast.Call):
+      returnList[0] += self.bodyHandlerCall(body.value)
+    else:
+      raise Exception("Assign.value not supported %s"%(body.value))
+
+
+    returnList[0] += ";"
+    return returnList[0]
 
 
   def bodyHandlerAugAssign(self, body):
@@ -473,11 +494,11 @@ class Parser:
   	return returnList
 
 
-  #only int interator allowed
+  #only float interator allowed
   #assuming always xrange(actually range doesnt make a difference)
   def bodyHandlerFor(self,body):
   	returnList = [""]
-  	returnList[0] += "for (int "
+  	returnList[0] += "for (float "
   	#target (only name)
   	returnList[0] += (self.bodyHandlerLiterals(body.target)[0])
   	returnList[0] += "="
@@ -591,9 +612,9 @@ class Parser:
   		if x != 0:
   			self.firstLineOfFunction += ","
   		if type(self.argValueList[x]).__name__ == "list":
-  			self.firstLineOfFunction += "int*" + " " + self.argList[x]
+  			self.firstLineOfFunction += "float*" + " " + self.argList[x]
   		else:
-  			self.firstLineOfFunction += type(self.argValueList[x]).__name__ + " " + self.argList[x]
+  			self.firstLineOfFunction += "float" + " " + self.argList[x] #type(self.argValueList[x]).__name__
   	self.firstLineOfFunction += ") {"
 
 
