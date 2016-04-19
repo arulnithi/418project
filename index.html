@@ -20,6 +20,58 @@
 
     <section class="main-content">
       <h1>
+<a id="checkpoint" class="anchor" href="#checkpoint" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Checkpoint</h1>
+
+<h3>
+<a id="work-so-far" class="anchor" href="#work-so-far" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Work So Far</h3>
+
+<p><strong>Read and understand Python libraries which support processing of Python syntax grammar</strong>
+<strong>Write the parser functions using the Python libraries as the first step for our module</strong></p>
+
+<p>Our current program now allows us to convert simple python code into C++ code using the python ast module. We are able to break down the function into its syntax tree, which we are then able to iterate through and construct a logically correct C++ function string. However, due to the limitations of the ast module, and the innate differences between Python and C++, the conversion process is not straightforward. One example is that the ast module does not recognize parentheses, thus mathematical instructions that require operations inside parentheses to be completed first will not be translated correctly. 
+(I.e. ( 5 * (2 + 1) ) in Python -&gt; 5 * 2 + 1 in C++ converted).
+To overcome this, we found a astor module, which is a newer module with additional functionality. We need to work integrating this into our current program.</p>
+
+<h3>
+<a id="currently-working-on" class="anchor" href="#currently-working-on" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Currently Working On</h3>
+
+<p><strong>Generate CUDA kernel code without errors given Python function which meets basic requirements (only arithmetic operations and no function calls within a function)</strong></p>
+
+<p>We are currently working on getting our parser to work on a broader set of functions. Since we want to generate CUDA kernel code for Python functions which have high arithmetic intensity and scope for parallel implementation. An example of such a function would be to mapping a computationally intensive function onto a large array. We are working towards successfully generating C++ code and CUDA kernel code for such a function by this week.</p>
+
+<h3>
+<a id="future-plan" class="anchor" href="#future-plan" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Future Plan</h3>
+
+<p><strong>Compile module on the Mandelbrot function and compare speedup to standard Python implementation</strong></p>
+
+<p>We will be slightly behind our projected schedule for working on this item. However, we understand this to be our main achievement goal for this project. This is will really test the validity of what we have worked on in the previous weeks and we foresee having to go back and make many adjustments. Hence we believe that if we can achieve this target, we can start to tweak our project for better speed up, larger scope of functions and adding OpenMP functionality, which are our stretch goals.</p>
+
+<h3>
+<a id="new-schedule" class="anchor" href="#new-schedule" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>New Schedule</h3>
+
+<pre><code>April 4 - 10
+-Read and understand Python libraries which support processing of Python syntax grammar
+-Write the parser functions using the Python libraries as the first step for our module
+April 11 - 17
+-Write the parser functions using the Python libraries as the first step for our module
+-Generate C++ code without errors given Python function which meets basic requirements (only arithmetic operations and function             calls within a function)
+-Work on checkpoint report
+April 19 - 24
+-Generate CUDA kernel code without errors given Python function which mimics high arithmetic intensity and sufficient scope for parallelism [Ram]
+-Tweak Mandelbrot function to satisfy our program restrictions [Arul]
+April 25 - 30
+-Generate CUDA kernel code correctly for the Mandelbrot function [Ram]
+-Write Compiler class to compile module on the Mandelbrot function using Python FFI [Arul]
+May 1 - 3
+-Compare speedup to standard Python implementation [Ram]
+-Produce graphs for comparison [Arul]
+May 4 - 7
+-Add functionality for higher control over block dimensions of CUDA kernel [Ram]
+-Start working on integrating OpenMP code if times permits [Arul]
+-Finalise the module compiler and fix any bugs [Ram]
+</code></pre>
+
+<h1>
 <a id="proposal" class="anchor" href="#proposal" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Proposal</h1>
 
 <h3>
