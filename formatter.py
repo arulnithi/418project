@@ -22,6 +22,12 @@ class Formatter:
     self.codeString = "" 
     self.indentLevel = 0
 
+    #execute formatting based on option
+    if option == "CPP":
+      self.formatTopLevelCPP()
+      self.formatBodyLevelCPP(self.originalBodyList)
+      self.formatBotLevelCPP()
+
 
   #use this to += a line to the formatter class
   def __iadd__(self, line):
@@ -55,8 +61,12 @@ class Formatter:
   	return self.codeString
 
 
+#====================================================================
+#CPP
+#====================================================================
+
   #formatter function for a cpp file
-  def formatCPP(self, codeList):
+  def formatBodyLevelCPP(self, codeList):
     #adding code
     for element in codeList:
   		if type(element) != list:
@@ -68,7 +78,7 @@ class Formatter:
 
 
   
-  def formatTopLevel(self):
+  def formatTopLevelCPP(self):
     #add the comments
     self.add("//Function %s parsed from %s"%(self.parser.functionName,self.parser.fileName))
     self.add("")
@@ -81,7 +91,7 @@ class Formatter:
     self.add("")
 
 
-  def formatBotLevel(self):
+  def formatBotLevelCPP(self):
     #seperate out the main function
     self.add("") 
     #go through arguments to be passed in
@@ -99,3 +109,13 @@ class Formatter:
     self.indent(-1)
     self.add("}")
 
+
+#====================================================================
+#CUDA
+#====================================================================
+
+
+
+#====================================================================
+#OpenMP
+#====================================================================

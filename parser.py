@@ -264,6 +264,14 @@ class Parser:
       returnString += self.binOpsParser(body)
       return (returnString, None)
 
+    elif isinstance(body, ast.Call):
+      returnString += self.bodyHandlerCall(body)
+      return (returnString, None)
+
+    elif isinstance(body, ast.Attribute):
+      returnString += self.bodyHandlerAttribute(body)
+      return (returnString, None)
+
     #Unknown Literal
     else:
       raise Exception("Literal not supported: %s"%(body))
@@ -317,6 +325,13 @@ class Parser:
   	returnString += "]"
   	#ctx (not needed for noe)
   	return returnString
+
+
+  def bodyHandlerAttribute(self,body):
+    if body.value.id != 'math':
+      raise Exception("Only math library allowed currently, not %s"%(body.value.id))
+    else:
+      return body.attr
 
 #====================================================================
 #Handlers for Parsing the body
