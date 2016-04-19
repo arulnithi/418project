@@ -73,7 +73,7 @@ class Formatter:
   			self.add(element)
   		else:
   			self.indent(1)
-  			self.formatCPP(element)
+  			self.formatBodyLevelCPP(element)
   			self.indent(-1)
 
 
@@ -96,16 +96,24 @@ class Formatter:
     self.add("") 
     #go through arguments to be passed in
     args = ""
+    malloc = []
     for x in xrange(len(self.parser.argValueList)):
       if x != 0:
         args += ","
-      args += str(self.parser.argValueList[len(self.parser.argValueList)-x-1])
+      if str(self.parser.argValueList[x]) != "[]":
+        args += str(self.parser.argValueList[x])
+      else:
+        args += str(self.parser.argList[x])
+        mallocString = "%s=(float*)malloc(%s*sizeof(float));"%(self.parser.argList[x],self.parser.length)
+        malloc.append(mallocString)
     #add the main function now
     self.add("float main() {")
     self.indent(1)
     self.add('printf("STARTING MAIN FUNCTION\\n");')
-    self.add("return %s(%s);"%(self.parser.functionName,args))
-    #self.add("return 0;")
+    for m in malloc:
+      self.add(m)
+    self.add("%s(%s);"%(self.parser.functionName,args))
+    self.add("return 0;")
     self.indent(-1)
     self.add("}")
 

@@ -2,8 +2,8 @@ import math
 
 #TESTTING ACTUAL
 #blah blah
-def foo(arg1,arg2):
-  a = arg1+2 + math.cos(0.4)
+def foo(brg1,arg2):
+  a = brg1[0]+2 + math.cos(0.4)
   return a
 
 
@@ -24,10 +24,10 @@ from formatter import *
 
 
 #TESTING
-parser = Parser(foo,1,2)
+parser = Parser(foo,5,[],2)
 code = Formatter(parser, 'CPP')
 
-
+print parser.argList
 print code.returnCodeString()
 
 

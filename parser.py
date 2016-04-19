@@ -21,43 +21,45 @@ class Parser:
 
   #Parser initilizer
   def __init__(self, *args):
-  	function = args[0]
+    function = args[0]
+    #length of all lists
+    self.length = args[1]
   	#Gives the function name
-  	self.functionName = function.__name__
+    self.functionName = function.__name__
   	#gives the source code as a string
-  	self.originalSourceCode = inspect.getsource(function)
+    self.originalSourceCode = inspect.getsource(function)
   	#gives the source as a list, every line is an element
-  	self.listSourceCode = inspect.getsourcelines(function)[0]
+    self.listSourceCode = inspect.getsourcelines(function)[0]
   	#gives the starting line number of function in file
-  	self.startingLineNumber = inspect.getsourcelines(function)[1]
+    self.startingLineNumber = inspect.getsourcelines(function)[1]
   	#gives the description of function which is written as comments on top
-  	self.description = inspect.getcomments(function)
+    self.description = inspect.getcomments(function)
   	#gives Python source file location of the function
-  	self.locationOfFolder = inspect.getsourcefile(function)
-  	self.fileName = self.locationOfFolder.split("/")[-1]
+    self.locationOfFolder = inspect.getsourcefile(function)
+    self.fileName = self.locationOfFolder.split("/")[-1]
   	#turn the code into an AST
-  	self.astTree = ast.parse(self.originalSourceCode)
+    self.astTree = ast.parse(self.originalSourceCode)
   	#input arguments list
-  	self.argList = []
-  	self.argValueList = args[1:]
+    self.argList = []
+    self.argValueList = args[2:]
   	#list of the complete body
-  	self.bodyList = []
+    self.bodyList = []
   	#local variables list 
-  	self.localVariablesList = []
+    self.localVariablesList = []
   	#for the first line
-  	self.firstLineOfFunction = "void " + self.functionName + "("
+    self.firstLineOfFunction = "void " + self.functionName + "("
   	#already type casted variables
-  	self.typeCastedList = []
-  	self.returnType = ""
+    self.typeCastedList = []
+    self.returnType = ""
 
   	#CALLING all functions needed
-  	self.checkTree()
-  	self.parseArguments()
-  	self.typeCastedList = self.argList
-  	self.parseLocalVariables()
-  	self.parseBody()
-  	self.parseFirstLine()
-  	self.wrapper()
+    self.checkTree()
+    self.parseArguments()
+    self.typeCastedList = self.argList
+    self.parseLocalVariables()
+    self.parseBody()
+    self.parseFirstLine()
+    self.wrapper()
 
   	#PRINTABLE function call
   	#self.printArgs()
@@ -115,10 +117,7 @@ class Parser:
   		#getting default values of arguments if any
   		for values in node.args.defaults:
   			self.argValueList.append(values.n)
-  	#set the argValueList with None for non default args
-  	while (len(self.argValueList)!=len(self.argList)):
-  		self.argValueList.append(None)
-  	self.argValueList = self.argValueList[::-1]
+
 
 
   #call only after parsing arguments
