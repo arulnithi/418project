@@ -97,6 +97,7 @@ class Formatter:
     #go through arguments to be passed in
     args = ""
     malloc = []
+    free = []
     for x in xrange(len(self.parser.argValueList)):
       if x != 0:
         args += ","
@@ -106,13 +107,20 @@ class Formatter:
         args += str(self.parser.argList[x])
         mallocString = "%s=(float*)malloc(%s*sizeof(float));"%(self.parser.argList[x],self.parser.length)
         malloc.append(mallocString)
+        free.append("free("+str(self.parser.argList[x])+");")
     #add the main function now
     self.add("float main() {")
     self.indent(1)
     self.add('printf("STARTING MAIN FUNCTION\\n");')
+    #allocate memory
     for m in malloc:
       self.add(m)
+    #call the function
     self.add("%s(%s);"%(self.parser.functionName,args))
+    #free memory
+    for f in free:
+      self.add(f)
+    #return
     self.add("return 0;")
     self.indent(-1)
     self.add("}")
@@ -122,7 +130,8 @@ class Formatter:
 #CUDA
 #====================================================================
 
-
+#go through string, if [], change the index
+#if there are for/while loops, set range to 1 if the iterator is only for []
 
 #====================================================================
 #OpenMP

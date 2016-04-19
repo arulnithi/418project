@@ -7,20 +7,8 @@ def foo(brg1,arg2):
   return a
 
 
-# print foo(1,2) #gives 4
-
 from parser import *
 from formatter import *
-
-#should not have default option i guess
-#int only (made all float)
-#only can declare ints / cant handle bracket ops
-#(handle calls for math) (think PI not supported)
-#lists declared outside
-#ATTRIBUTE in handle ltieral done
-#change all to float? done 
-#python to c ffi
-
 
 
 #TESTING

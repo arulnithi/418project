@@ -628,7 +628,7 @@ class Parser:
   		if type(self.argValueList[x]).__name__ == "list":
   			self.firstLineOfFunction += "float*" + " " + self.argList[x]
   		else:
-  			self.firstLineOfFunction += "float" + " " + self.argList[x] #type(self.argValueList[x]).__name__
+  			self.firstLineOfFunction += type(self.argValueList[x]).__name__ + " " + self.argList[x] #type(self.argValueList[x]).__name__
   	self.firstLineOfFunction += ") {"
 
 
