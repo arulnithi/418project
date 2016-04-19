@@ -15,7 +15,7 @@ from formatter import *
 parser = Parser(foo,5,[],2)
 code = Formatter(parser, 'CPP')
 
-print parser.argList
+# print parser.argList
 print code.returnCodeString()
 
 
