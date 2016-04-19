@@ -25,12 +25,22 @@
 <h3>
 <a id="work-so-far" class="anchor" href="#work-so-far" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Work So Far</h3>
 
-<p><strong>Read and understand Python libraries which support processing of Python syntax grammar</strong>
-<strong>Write the parser functions using the Python libraries as the first step for our module</strong></p>
+<p>-Read and understood Python libraries which support processing of Python syntax grammar to parse simple functions</p>
 
-<p>Our current program now allows us to convert simple python code into C++ code using the python ast module. We are able to break down the function into its syntax tree, which we are then able to iterate through and construct a logically correct C++ function string. However, due to the limitations of the ast module, and the innate differences between Python and C++, the conversion process is not straightforward. One example is that the ast module does not recognize parentheses, thus mathematical instructions that require operations inside parentheses to be completed first will not be translated correctly. 
-(I.e. ( 5 * (2 + 1) ) in Python -&gt; 5 * 2 + 1 in C++ converted).
-To overcome this, we found a astor module, which is a newer module with additional functionality. We need to work integrating this into our current program.</p>
+<pre><code>Our current program now allows us to parse simple python code using the python ast and inspect modules. We are able to break down the function into its full syntax tree. However, due to the limitations of the ast module, and the innate differences between Python and C++, the conversion process is not straightforward. One example is that the ast module does not recognize parentheses, thus mathematical instructions that require operations inside parentheses to be completed first will not be translated correctly. 
+
+To overcome this, we found a astor module, which is a newer module with additional functionality. We need to work integrating this into our current program.
+</code></pre>
+
+<p>-Started to write the formatter class to convert parsed Python code to C++ code</p>
+
+<pre><code>We started work on the formatter class to convert the parsed function into C++, CUDA and OpenMp code. We have finishing handling the conversion to C++ code and have verified that it compiles. Our current program is able to handle calls to the math library, arithmetic operations and simple assignments. 
+</code></pre>
+
+<p>-Configured and Understood the semantics of CUDA</p>
+
+<pre><code>We have also read through various examples of CUDA functions as well as understood what is needed for CUDA to compile. This will help us as we try to format the parsed code into a CUDA file.
+</code></pre>
 
 <h3>
 <a id="currently-working-on" class="anchor" href="#currently-working-on" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Currently Working On</h3>
