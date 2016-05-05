@@ -401,7 +401,7 @@ class Parser:
 	  	elif isinstance(body.value, ast.Str):
 	  		self.returnType += "char"
 	  	else:
-	  		self.returnType += "float "
+	  		self.returnType += "void "
 	  		#raise Exception("Return type not supported %s"%(body.value))
   	return returnList[0]
 
