@@ -154,6 +154,14 @@ class Formatter:
         #first line of function
         if (self.parser.functionName in element) and (") {" in element):
           self.add("__global__ " + element)
+          #add checker for threadIdx.x
+          self.indent(1)
+          self.add("if (threadIdx > %s) {"%self.parser.length)
+          self.indent(1)
+          self.add("return;")
+          self.indent(-1)
+          self.add("}")
+          self.indent(-1)
         #for loop which needs to be manually set to 1
         elif ("for " in element) and ("x=" in element) and ("x+" in element):
           l = element.split(";")
@@ -192,16 +200,19 @@ class Formatter:
     self.add("") 
     #go through arguments to be passed in
     args = ""
-    malloc = []
+    malloc = []   
+    cudaMalloc = []  #to add a character at the end to differentiate the variable from malloc
     free = []
+    blockSize = self.parser.length
     for x in xrange(len(self.parser.argValueList)):
       if x != 0:
         args += ","
       if (len(str(self.parser.argValueList[x]))>2) and str(self.parser.argValueList[x])[0]=='[' and str(self.parser.argValueList[x])[-1]==']':
-        args += str(self.parser.argList[x])
+        args += str(self.parser.argList[x]) + "Cuda"
         oldString = str(self.parser.argValueList[x])
-        newString = "{" + oldString[1:-1] + "}"
+        newString = "{" + oldString[1:-1] + "}" #to handle declaration in C++
         mallocString = "float %s []=%s;"%(self.parser.argList[x],newString)
+        cudaMalloc.append(self.parser.argList[x]);
         malloc.append(mallocString)
         free.append("free("+str(self.parser.argList[x])+");")
       elif str(self.parser.argValueList[x]) != "[]":
@@ -212,14 +223,45 @@ class Formatter:
         malloc.append(mallocString)
         free.append("free("+str(self.parser.argList[x])+");")
     #add the main function now
-    self.add("float main() {")
+    self.add("int main() {")
     self.indent(1)
     self.add('printf("STARTING MAIN FUNCTION\\n");')
+    self.add("")
+    self.add("//Define constants to use")
+    self.add("const int N = %d;"%blockSize)
+    self.add("const int blocksize = %d;"%blockSize)
+    self.add("")
+    self.add("//Allocate the variables")
     #allocate memory
     for m in malloc:
       self.add(m)
+    self.add("")
+    self.add("//Declare and allocate the variables and copy it over to device")
+    #declare cuda variables
+    for name in cudaMalloc:
+      self.add("float *%s;"% (name + "Cuda"))
+    self.add("const int csize = N*sizeof(float);")
+
+    #cudaMalloc
+    for name in cudaMalloc:
+      self.add("cudaMalloc( (void**)&%s, csize );"%(name + "Cuda"))
+
+    #cudaMemCpy
+    for name in cudaMalloc:
+      self.add("cudaMemcpy( %s, %s, csize, cudaMemcpyHostToDevice );"%((name + "Cuda"),name))
+    
+    self.add("")
+    self.add("//Setup variables for cuda block and grid and then call function")
+    self.add("dim3 dimBlock( blocksize, 1 );")
+    self.add("dim3 dimGrid( 1, 1 );")
+
     #call the function
-    self.add("%s(%s);"%(self.parser.functionName,args))
+    self.add("%s<<<dimGrid, dimBlock>>>(%s);"%(self.parser.functionName,args))
+    self.add("")
+    self.add("//Free allocated memory")
+    #cudaFree
+    for name in cudaMalloc:
+      self.add("cudaFree( %s );"%(name + "Cuda"))
     #free memory
     for f in free:
       self.add(f)
