@@ -8,7 +8,9 @@ Returns result using FFI/output.txt? (TBD)
 """
 
 #Libraries needed
-
+import datetime
+import os
+from subprocess import Popen, PIPE
 
 #other files needed
 from parser import *
@@ -24,6 +26,12 @@ class Compiler:
 		self.parser = Parser(self.parseOptions)
 		#call the formatter
 		self.formatted = Formatter(self.parser, self.option)
+		#the file name to be compiled
+		self.fileName = ""
+
+		#execute the functions needed to compile
+		self.writeToFile()
+		self.buildFile()
 
 
 	#prints the output string to be written onto file
@@ -40,6 +48,43 @@ class Compiler:
 		print self.parser.bodyList
 
 
-	#writes to file, depending on option, compiles with the correct flags, 
+	#write code string to a file (file type based on option)
+	def writeToFile(self):
+		#get name of file
+		now = datetime.datetime.now().strftime("%H%Mhrs_%Y_%m_%d")  
+		fileName = "parapy_"+str(self.parser.fileName).split(".py")[0] + "_"+ now
+		if "CUDA" in self.option:
+			fileName += ".cu"
+		else:
+			fileName += ".cpp"
+		#write to file
+		os.system("touch "+fileName)
+		f = open(fileName, 'w')
+		f.write(self.formatted.returnCodeString())
+		f.close()
+		self.fileName = fileName
+
+
+	#depending on the option, compile with the correct flags
 	#how to return output?
+	def buildFile(self):
+		#generate the scriptlines
+		scriptLine1 = ""
+		scriptLine2 = "./output"
+		if "CUDA" in self.option:
+			scriptLine1 += "nvcc " + self.fileName + " -o" + " output" 
+		else:
+			scriptLine1 += "c++ "  + self.fileName + " -o" + " output"
+		#running the scriptlines
+		p = Popen([scriptLine1], stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=True)
+		stdoutData = p.communicate(input=scriptLine2)
+		print stdoutData
+
+
+
+
+
+
+
+
 

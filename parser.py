@@ -512,7 +512,7 @@ class Parser:
   #assuming always xrange(actually range doesnt make a difference)
   def bodyHandlerFor(self,body):
   	returnList = [""]
-  	returnList[0] += "for (float "
+  	returnList[0] += "for (int "
   	#target (only name)
   	returnList[0] += (self.bodyHandlerLiterals(body.target)[0])
   	returnList[0] += "="

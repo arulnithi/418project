@@ -4,8 +4,7 @@ and based on the option passed in, outputs a code file.
 
 Possible Options (in string):
 CPP
-CPP_CUDA
-CPP_OpenMp
+CUDA
 """
 
 
@@ -13,26 +12,33 @@ CPP_OpenMp
 class Formatter:
 
 
-  def __init__(self, parser, option):
-    #parser class
-    self.parser = parser
-    #the list to be parsed
-    self.originalBodyList = parser.bodyList
-    #the output code in a string
-    self.codeString = "" 
-    self.indentLevel = 0
+  def __init__(self, *args):
+    #formatting for a function with inputs
+    if len(args) > 0:
+      #parser class
+      self.parser = args[0]
+      #the list to be parsed
+      self.originalBodyList = args[0].bodyList
+      #the output code in a string
+      self.codeString = "" 
+      self.indentLevel = 0
 
-    #execute formatting based on option
-    if option == "CPP":
-      self.formatTopLevelCPP()
-      self.formatBodyLevelCPP(self.originalBodyList)
-      self.formatBotLevelCPP()
-    elif option == "CUDA":
-      self.formatTopLevelCU()
-      self.formatBodyLevelCU(self.originalBodyList)
-      self.formatBotLevelCU()
+      option = args[1]
+      #execute formatting based on option
+      if option == "CPP":
+        self.formatTopLevelCPP()
+        self.formatBodyLevelCPP(self.originalBodyList)
+        self.formatBotLevelCPP()
+      elif option == "CUDA":
+        self.formatTopLevelCU()
+        self.formatBodyLevelCU(self.originalBodyList)
+        self.formatBotLevelCU()
+      else:
+        raise Exception("Formatting option not available (%s)"%option)
+    #in case of writing a function with no inputs
     else:
-      raise Exception("Formatting option not available (%s)"%option)
+      self.codeString = "" 
+      self.indentLevel = 0
 
 
   #use this to += a line to the formatter class
@@ -91,6 +97,7 @@ class Formatter:
     #add the libraries
     self.add("#include <stdio.h>")
     self.add("#include <math.h>")
+    self.add("#include <stdlib.h>")
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -113,16 +120,16 @@ class Formatter:
         newString = "{" + oldString[1:-1] + "}"
         mallocString = "float %s []=%s;"%(self.parser.argList[x],newString)
         malloc.append(mallocString)
-        free.append("free("+str(self.parser.argList[x])+");")
+        free.append("free ("+str(self.parser.argList[x])+");")
       elif str(self.parser.argValueList[x]) != "[]":
         args += str(self.parser.argValueList[x])
       else:
         args += str(self.parser.argList[x])
         mallocString = "%s=(float*)malloc(%s*sizeof(float));"%(self.parser.argList[x],self.parser.length)
         malloc.append(mallocString)
-        free.append("free("+str(self.parser.argList[x])+");")
+        free.append("free ("+str(self.parser.argList[x])+");")
     #add the main function now
-    self.add("float main() {")
+    self.add("int main() {")
     self.indent(1)
     self.add('printf("STARTING MAIN FUNCTION\\n");')
     #allocate memory
@@ -189,6 +196,7 @@ class Formatter:
     #add the libraries
     self.add("#include <stdio.h>")
     self.add("#include <math.h>")
+    self.add("#include <stdlib.h>")
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -214,14 +222,14 @@ class Formatter:
         mallocString = "float %s []=%s;"%(self.parser.argList[x],newString)
         cudaMalloc.append(self.parser.argList[x]);
         malloc.append(mallocString)
-        free.append("free("+str(self.parser.argList[x])+");")
+        free.append("free ("+str(self.parser.argList[x])+");")
       elif str(self.parser.argValueList[x]) != "[]":
         args += str(self.parser.argValueList[x])
       else:
         args += str(self.parser.argList[x])
         mallocString = "%s=(float*)malloc(%s*sizeof(float));"%(self.parser.argList[x],self.parser.length)
         malloc.append(mallocString)
-        free.append("free("+str(self.parser.argList[x])+");")
+        free.append("free ("+str(self.parser.argList[x])+");")
     #add the main function now
     self.add("int main() {")
     self.indent(1)
