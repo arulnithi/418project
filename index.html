@@ -20,6 +20,28 @@
 
     <section class="main-content">
       <h1>
+<a id="competition" class="anchor" href="#competition" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Competition</h1>
+
+<h2>
+<a id="parapy" class="anchor" href="#parapy" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ParaPy</h2>
+
+<p>ParaPy is a Python module which allows the user to write a Python function and call ParaPy’s compiler class on the function to generate, execute and compile files based on the different options allowed. These options include harnessing the parallel power of GPUs for a single Python function or mapping a single Python function across a collection of elements.</p>
+
+<h2>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p><strong>ParaPy</strong> is able to use the GPU present in a system due to its 3-stage process. It first breaks down the Python function into its syntax tree based on the currently supported syntax. Secondly, it uses the elements of the tree to re-construct a CUDA function based on whether it is executing a map or pure parallelism of the given function. Lastly, it will compile and run the newly created CUDA function in a separate file. </p>
+
+<p><strong>Goal:</strong> To allow the user to use map and other functions which could be speed up by parallelizing across the GPU while only writing functions in standard Python syntax.</p>
+
+<h2>
+<a id="current-results" class="anchor" href="#current-results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Current Results</h2>
+
+<p>We are able to allow the user to parallelize for loops in their Python function using the GPU.</p>
+
+<p>We are able to allow the user to map a Python function to a collection of elements using the GPU. </p>
+
+<h1>
 <a id="checkpoint" class="anchor" href="#checkpoint" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Checkpoint</h1>
 
 <h3>
