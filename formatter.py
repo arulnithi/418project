@@ -33,6 +33,10 @@ class Formatter:
         self.formatTopLevelCU()
         self.formatBodyLevelCU(self.originalBodyList)
         self.formatBotLevelCU()
+      elif option == "CUDA-MAP":
+        self.formatTopLevelCUMAP()
+        self.formatBodyLevelCUMAP(self.originalBodyList)
+        self.formatBotLevelCUMAP()
       else:
         raise Exception("Formatting option not available (%s)"%option)
     #in case of writing a function with no inputs
@@ -43,34 +47,34 @@ class Formatter:
 
   #use this to += a line to the formatter class
   def __iadd__(self, line):
-  	self.add(line)
-  	return self
+    self.add(line)
+    return self
 
   #how the line gets added based on the indent level
   def add(self, line):
-  	self.codeString += self.setIndent()
-  	self.codeString += line 
-  	self.codeString += "\n"
+    self.codeString += self.setIndent()
+    self.codeString += line 
+    self.codeString += "\n"
 
 
   def setIndent(self):
-  	return " " * self.indentLevel * 4
+    return " " * self.indentLevel * 4
 
 
   def indent(self, value):
-  	self.indentLevel += value
-  	if self.indentLevel <0:
-  		raise Exception("Indent level less than zero: level=%s"%(self.indentLevel))
+    self.indentLevel += value
+    if self.indentLevel <0:
+      raise Exception("Indent level less than zero: level=%s"%(self.indentLevel))
 
 
   #/*    */, need to cut at like 80 char every line, optional
   def commentsFromPythonSource(self):
-  	return
+    return
 
   
   #check indent level and return strin, not sure if needed
   def returnCodeString(self):
-  	return self.codeString
+    return self.codeString
 
 
 #====================================================================
@@ -81,12 +85,12 @@ class Formatter:
   def formatBodyLevelCPP(self, codeList):
     #adding code
     for element in codeList:
-  		if type(element) != list:
-  			self.add(element)
-  		else:
-  			self.indent(1)
-  			self.formatBodyLevelCPP(element)
-  			self.indent(-1)
+      if type(element) != list:
+        self.add(element)
+      else:
+        self.indent(1)
+        self.formatBodyLevelCPP(element)
+        self.indent(-1)
 
 
   
@@ -283,7 +287,133 @@ class Formatter:
 #CUDA-MAP
 #====================================================================
 
+ 
+  #formatter function for a cpp file
+  def formatBodyLevelCUMAP(self, codeList):
+    #adding code
+    for element in codeList:
+      if type(element) != list:
+        #first line of function
+        if (self.parser.functionName in element) and (") {" in element):
+          self.add("__global__ " + element)
+          #add checker for threadIdx.x
+          self.indent(1)
+          newElement = "int index = blockIdx.x * blockDim.x + threadIdx.x;"
+          self.add(newElement)
+          self.add("if (index > %s) {"%self.parser.length)
+          self.indent(1)
+          self.add("return;")
+          self.indent(-1)
+          self.add("}")
+          self.indent(-1)
+          
+        #index x set to threadIdx.x
+        elif ("float index" in element) and ('=' in element) and ('0' in element):
+          pass
+        else:
+          # if element == 'float index=0;':
+          self.add(element)
+      else:
+        self.indent(1)
+        self.formatBodyLevelCUMAP(element)
+        self.indent(-1)
 
+  
+  def formatTopLevelCUMAP(self):
+    #add the comments
+    self.add("//Function %s parsed from %s"%(self.parser.functionName,self.parser.fileName))
+    self.add("")
+    #add the libraries
+    self.add("#include <stdio.h>")
+    self.add("#include <math.h>")
+    self.add("#include <stdlib.h>")
+    self.add("")
+    #add defines
+    self.add("#define pi 3.14159265")
+    self.add("")
+
+
+  def formatBotLevelCUMAP(self):
+    #seperate out the main function
+    self.add("") 
+    #go through arguments to be passed in
+    args = ""
+    malloc = []   
+    cudaMalloc = []  #to add a character at the end to differentiate the variable from malloc
+    free = []
+    N = self.parser.length
+    #########################################
+    blocksize = 128  ########################  To be changed based on GPU being used
+    #########################################
+    for x in xrange(len(self.parser.argValueList)):
+      if x != 0:
+        args += ","
+      if (len(str(self.parser.argValueList[x]))>2) and str(self.parser.argValueList[x])[0]=='[' and str(self.parser.argValueList[x])[-1]==']':
+        args += str(self.parser.argList[x]) + "Cuda"
+        oldString = str(self.parser.argValueList[x])
+        newString = "{" + oldString[1:-1] + "}" #to handle declaration in C++
+        mallocString = "float %s [%s]=%s;"%(self.parser.argList[x],self.parser.length,newString)
+        cudaMalloc.append(self.parser.argList[x]);
+        malloc.append(mallocString)
+        #free.append("free ("+str(self.parser.argList[x])+");")
+      elif str(self.parser.argValueList[x]) != "[]":
+        args += str(self.parser.argValueList[x])
+      else:
+        args += str(self.parser.argList[x]) + "Cuda"
+        cudaMalloc.append(self.parser.argList[x]);
+        mallocString = "float* %s=(float*)malloc(%s*sizeof(float));"%(self.parser.argList[x],self.parser.length)
+        malloc.append(mallocString)
+        free.append("free ("+str(self.parser.argList[x])+");")
+    #add the main function now
+    self.add("int main() {")
+    self.indent(1)
+    self.add('printf("STARTING MAIN FUNCTION\\n");')
+    self.add("")
+    self.add("//Define constants to use")
+    self.add("const int N = %d;"%N)
+    self.add("const int blocksize = %d;"%blocksize)
+    self.add("")
+    self.add("//Allocate the variables")
+    #allocate memory
+    for m in malloc:
+      self.add(m)
+    self.add("")
+    self.add("//Declare and allocate the variables and copy it over to device")
+    #declare cuda variables
+    for name in cudaMalloc:
+      self.add("float *%s;"% (name + "Cuda"))
+    self.add("const int csize = N*sizeof(float);")
+    #cudaMalloc
+    for name in cudaMalloc:
+      self.add("cudaMalloc( (void**)&%s, csize );"%(name + "Cuda"))
+    #cudaMemCpy
+    for i in xrange(0,len(cudaMalloc)-1):
+      name = cudaMalloc[i]
+      self.add("cudaMemcpy( %s, %s, csize, cudaMemcpyHostToDevice );"%((name + "Cuda"),name))
+    
+    self.add("")
+    self.add("//Setup variables for cuda block and grid and then call function")
+    self.add("dim3 dimBlock( blocksize, 1 );")
+    #INCLUDE MAX NO THREADS  >>> dim3 numBlocks((MAX_NO_OF_THREADS-1+numCircles)/MAX_NO_OF_THREADS);
+    self.add("dim3 dimGrid( ((N + blocksize - 1) / blocksize), 1 );")
+
+    #call the function
+    self.add("%s<<<dimGrid, dimBlock>>>(%s);"%(self.parser.functionName,args))
+    self.add("")
+    self.add("//Copy back result data")
+    self.add("cudaMemcpy(%s, %s, N * sizeof(float), cudaMemcpyDeviceToHost);"%(str(self.parser.argList[len(self.parser.argValueList)-1]),str(self.parser.argList[len(self.parser.argValueList)-1])+"Cuda"))
+    self.add("")
+    self.add("//Free allocated memory")
+    #cudaFree
+    for name in cudaMalloc:
+      self.add("cudaFree( %s );"%(name + "Cuda"))
+    #free memory  
+    for f in free:
+      self.add(f)
+    #return
+    self.add("return 0;")
+    self.indent(-1)
+    self.add("}")
 
 #====================================================================
 #OpenMP
