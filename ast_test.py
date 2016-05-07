@@ -31,7 +31,7 @@ def foo(brg1,arg2):
 
 from compiler import *
 lol = [1,2,3,4,5]
-c = Compiler("CPP", foo, 5,lol,[])
+c = Compiler("CUDA", foo, 5,lol,[])
 
 # c.printCodeString()
 # c.printBodyList()

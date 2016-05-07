@@ -163,7 +163,7 @@ class Formatter:
           self.add("__global__ " + element)
           #add checker for threadIdx.x
           self.indent(1)
-          self.add("if (threadIdx > %s) {"%self.parser.length)
+          self.add("if (threadIdx.x > %s) {"%self.parser.length)
           self.indent(1)
           self.add("return;")
           self.indent(-1)
@@ -178,7 +178,7 @@ class Formatter:
         #index x set to threadIdx.x
         elif ("[x]" in element):
           l = element.split("[x]")
-          newL = [l[0],"[threadIdx.x]",l[1]]
+          newL = ("[threadIdx.x]").join(l)
           self.add("".join(newL))
         #non special case
         else:
