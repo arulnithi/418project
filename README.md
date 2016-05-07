@@ -20,10 +20,12 @@ To use the ParaPy module:
 1) Add 'from compiler import *' to import the module
 
 2) Write your Python function:
+
 	def foo(arg1, arg2):
 	    return
 
 3) Call the Compiler class:
+
 	arg1 = 1
 	arg2 = 2
 	c = Compiler('CUDA',foo,5,arg1,arg2)
@@ -33,7 +35,12 @@ To use the ParaPy module:
 	Compiler(option, fn name, array max length, argument1, argument2,...)
 
 ## Options
-	'CPP'
-	-standard conversion of Python code to C++ code
-	'CUDA'
-	'CUDA-MAP'
+### 'CPP'
+	- standard conversion of Python code to C++ code
+### 'CUDA'
+	- will take any for loop with variable name == 'x'
+	- will parallelize that for loop within the function
+	- blocksize is set to *array max length*
+### 'CUDA-MAP'
+	-will translate the Python function to a CUDA function
+	-will run the CUDA function on the collection of elements passed in as a list in *argument1*
