@@ -20,7 +20,7 @@ class Parser:
 #====================================================================
 
   #Parser initilizer
-  def __init__(self, *args):
+  def __init__(self, args):
     function = args[0]
     #length of all lists
     self.length = args[1]

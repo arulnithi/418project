@@ -9,25 +9,32 @@ def foo(brg1,arg2):
 	
 
 
-from parser import *
-from formatter import *
+# from parser import *
+# from formatter import *
 
 
-#only use x to distribute across wraps
+# #only use x to distribute across wraps
+# length of list (not always neccessary?)
 
-#TESTING
-parser = Parser(foo,5,[1,2,3,4,5],2)
-#print parser.bodyList
-code = Formatter(parser, 'CUDA')
+# #TESTING
+# parser = Parser(foo,5,[1,2,3,4,5],2)
+# #print parser.bodyList
+# code = Formatter(parser, 'CUDA')
 
-# print parser.argList
-print code.returnCodeString()
+# # print parser.argList
+# print code.returnCodeString()
 
 
 # parser.printTree()
 # print parser.bodyList
 # print parser.fileName
 
+from compiler import *
+
+c = Compiler("CUDA", foo, 5,[1,2,3,4,5],2)
+
+c.printCodeString()
+# c.printBodyList()
 
 
 
