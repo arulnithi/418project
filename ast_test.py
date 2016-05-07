@@ -5,7 +5,7 @@ import math
 def foo(brg1,arg2):
 	for x in xrange(5):
 		for y in xrange(100):
-			brg1[x] = arg2 +1
+			brg1[x] = arg2[x] +1
 	
 
 
@@ -30,8 +30,8 @@ def foo(brg1,arg2):
 # print parser.fileName
 
 from compiler import *
-
-c = Compiler("CPP", foo, 5,[1,2,3,4,5],2)
+lol = [1,2,3,4,5]
+c = Compiler("CPP", foo, 5,lol,[])
 
 # c.printCodeString()
 # c.printBodyList()

@@ -118,14 +118,14 @@ class Formatter:
         args += str(self.parser.argList[x])
         oldString = str(self.parser.argValueList[x])
         newString = "{" + oldString[1:-1] + "}"
-        mallocString = "float %s []=%s;"%(self.parser.argList[x],newString)
+        mallocString = "float %s [%s]=%s;"%(self.parser.argList[x],self.parser.length,newString)
         malloc.append(mallocString)
-        free.append("free ("+str(self.parser.argList[x])+");")
+        #free.append("free ("+str(self.parser.argList[x])+");")
       elif str(self.parser.argValueList[x]) != "[]":
         args += str(self.parser.argValueList[x])
       else:
         args += str(self.parser.argList[x])
-        mallocString = "%s=(float*)malloc(%s*sizeof(float));"%(self.parser.argList[x],self.parser.length)
+        mallocString = "float* %s=(float*)malloc(%s*sizeof(float));"%(self.parser.argList[x],self.parser.length)
         malloc.append(mallocString)
         free.append("free ("+str(self.parser.argList[x])+");")
     #add the main function now
@@ -219,15 +219,15 @@ class Formatter:
         args += str(self.parser.argList[x]) + "Cuda"
         oldString = str(self.parser.argValueList[x])
         newString = "{" + oldString[1:-1] + "}" #to handle declaration in C++
-        mallocString = "float %s []=%s;"%(self.parser.argList[x],newString)
+        mallocString = "float %s [%s]=%s;"%(self.parser.argList[x],self.parser.length,newString)
         cudaMalloc.append(self.parser.argList[x]);
         malloc.append(mallocString)
-        free.append("free ("+str(self.parser.argList[x])+");")
+        #free.append("free ("+str(self.parser.argList[x])+");")
       elif str(self.parser.argValueList[x]) != "[]":
         args += str(self.parser.argValueList[x])
       else:
         args += str(self.parser.argList[x])
-        mallocString = "%s=(float*)malloc(%s*sizeof(float));"%(self.parser.argList[x],self.parser.length)
+        mallocString = "float* %s=(float*)malloc(%s*sizeof(float));"%(self.parser.argList[x],self.parser.length)
         malloc.append(mallocString)
         free.append("free ("+str(self.parser.argList[x])+");")
     #add the main function now

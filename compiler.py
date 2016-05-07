@@ -10,7 +10,9 @@ Returns result using FFI/output.txt? (TBD)
 #Libraries needed
 import datetime
 import os
-from subprocess import Popen, PIPE
+import subprocess
+
+
 
 #other files needed
 from parser import *
@@ -68,22 +70,26 @@ class Compiler:
 	#depending on the option, compile with the correct flags
 	#how to return output?
 	def buildFile(self):
+		# os.system("touch out.txt")
 		#generate the scriptlines
 		scriptLine1 = ""
-		scriptLine2 = "./output"
+		scriptLine2 = "./output" #  >> out.txt
 		if "CUDA" in self.option:
 			scriptLine1 += "nvcc " + self.fileName + " -o" + " output" 
 		else:
 			scriptLine1 += "c++ "  + self.fileName + " -o" + " output"
 		#running the scriptlines
-		p = Popen([scriptLine1], stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=True)
-		stdoutData = p.communicate(input=scriptLine2)
-		print stdoutData
-
-
-
-
-
+		# p = Popen([scriptLine1], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+		# stdoutData = p.communicate(scriptLine2)
+		# #check for errors
+		# if stdoutData[1] != "":
+		# 	print "Error in compilation:\n",stdoutData[1]
+		# 	return
+		# else:
+		# 	#get back output somehow
+		# 	print stdoutData[0]
+		subprocess.call(scriptLine1.split(" "))
+		subprocess.call(scriptLine2)
 
 
 
