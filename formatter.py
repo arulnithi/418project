@@ -102,6 +102,7 @@ class Formatter:
     self.add("#include <stdio.h>")
     self.add("#include <math.h>")
     self.add("#include <stdlib.h>")
+    self.add('#include <iostream>')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -201,6 +202,7 @@ class Formatter:
     self.add("#include <stdio.h>")
     self.add("#include <math.h>")
     self.add("#include <stdlib.h>")
+    self.add('#include <iostream>')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -327,6 +329,7 @@ class Formatter:
     self.add("#include <stdio.h>")
     self.add("#include <math.h>")
     self.add("#include <stdlib.h>")
+    self.add('#include <iostream>')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")

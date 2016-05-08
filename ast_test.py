@@ -41,6 +41,7 @@ import math
 def foo(alpha,x,y,result):
 	index = 0
 	result[index]= alpha * x[index] + y[index]
+	print result[1]
 	
 #  #CUDA-MAP
 
@@ -49,8 +50,8 @@ alpha = 2
 x = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
 y = [1,2,3,4,2,4,2,63,4,7,4,8,3,1,2,5,1,5,2,2]
 ret = []
-c = Compiler("CUDA-MAP",foo,20,alpha,x,y,ret)
+c = Compiler("CPP",foo,len(x),alpha,x,y,ret)
 
-
-
+c.printCodeString()
+# c.printTree()
 

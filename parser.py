@@ -424,7 +424,7 @@ class Parser:
       elif isinstance(target, ast.Name):
         if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num) or isinstance(body.value, ast.BinOp):
           if self.bodyHandlerLiterals(target)[0] not in self.typeCastedList:
-            returnList.append("float ")
+            returnList.append("int ")
             returnList[0] += (self.bodyHandlerLiterals(target)[0])
             self.typeCastedList.append(self.bodyHandlerLiterals(target)[0])
           else:
@@ -563,6 +563,24 @@ class Parser:
 
   def bodyHandlerContinue(self, body):
   	return "continue;"
+
+
+  def bodyHandlerPrint(self, body):
+    returnString = "std::cout"
+    for value in body.values:
+      returnString += " << "
+      if isinstance(value, ast.Num):
+        returnString += str(value.n) + ' << " " '
+      elif isinstance(value, ast.Str):
+        returnString += '"' + value.s + ' "' 
+      elif isinstance(value, ast.Name):
+        returnString += str(value.id) + ' << " " '
+      elif isinstance(value, ast.Subscript):
+        returnString += self.bodyHandlerSubscript(value) + ' << " " '
+      else:
+        raise Exception("Print type unsupported (%s)"%value)
+    returnString += " << std::endl;"
+    return returnString
 #====================================================================
 #Main Handler for Parsing the body
 #should be a concatnation of lists
@@ -589,9 +607,9 @@ class Parser:
    	elif isinstance(body, ast.Return):
   		return self.bodyHandlerReturn(body)
 
-  	# #print (hard to support, need typechecker somehow)
-   # 	elif isinstance(body, ast.Print):
-  	# 	self.bodyHandlerPrint(body)
+  	#print (hard to support, need typechecker somehow)
+   	elif isinstance(body, ast.Print):
+  		return self.bodyHandlerPrint(body)
 
   	# #loop modifiers
   	elif isinstance(body, ast.Break):
