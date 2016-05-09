@@ -108,7 +108,7 @@ class Formatter:
     self.add("#include <stdlib.h>")
     self.add('#include <iostream>')
     self.add('#include <algorithm>')
-    self.add('#include <cstudio>')
+    self.add('#include <cstdio>')
     self.add('#include <ctime>')
     self.add("")
     #add defines
@@ -211,7 +211,7 @@ class Formatter:
     self.add("#include <stdlib.h>")
     self.add('#include <iostream>')
     self.add('#include <algorithm>')
-    self.add('#include <cstudio>')
+    self.add('#include <cstdio>')
     self.add('#include <ctime>')
     self.add("")
     #add defines
@@ -341,7 +341,7 @@ class Formatter:
     self.add("#include <stdlib.h>")
     self.add('#include <iostream>')
     self.add('#include <algorithm>')
-    self.add('#include <cstudio>')
+    self.add('#include <cstdio>')
     self.add('#include <ctime>')
     self.add("")
     #add defines
@@ -358,7 +358,7 @@ class Formatter:
     cudaMalloc = []  #to add a character at the end to differentiate the variable from malloc
     free = []
     N = self.parser.length
-    blocksize = self.blockSize
+    blocksize = self.blocksize
     for x in xrange(len(self.parser.argValueList)):
       if x != 0:
         args += ","
