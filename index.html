@@ -1,209 +1,60 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
+	<head>
+		<script src="jquery-2.1.3.min.js"></script>
+
+		<script type="text/javascript">
+		$(document).ready(function() {
+			$("#body").load("report.html");
+
+			$("#progress").click(function() {
+				$("#body").load("progress.html");
+			});
+      $("#competition").click(function() {
+        $("#body").load("competition.html");
+      });
+
+      $("#report").click(function() {
+        $("#body").load("report.html");
+      });
+
+			$("#proposal").click(function() {
+				$("#body").load("proposal.html");
+			});
+		});
+
+		</script>
+
     <meta charset="UTF-8">
-    <title>ParaPy by ramverma92</title>
+    <title>ParaPy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
   <body>
     <section class="page-header">
       <h1 class="project-name">ParaPy</h1>
-      <h2 class="project-tagline">It&#39;s like CUDA, but for Python</h2>
-      <a href="https://github.com/ramverma92/418project" class="btn">View on GitHub</a>
-      <a href="https://github.com/ramverma92/418project/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/ramverma92/418project/tarball/master" class="btn">Download .tar.gz</a>
+      <h2 class="project-tagline">15-418 Final Project</h2>
+      <a id="proposal" href="#" class="btn">Proposal</a>
+      <a id="competition" href="#" class="btn">Parallel Competition</a>
+      <a id="report" href="#" class="btn">Report</a>
+      <a id="progress" href="#" class="btn">Project Checkpoint</a>
+      <a target="_blank" href="https://github.com/ramverma92/418project" class="btn">View on GitHub</a>
     </section>
+    <style>
+    p.small {
+      line-height: 97%;
+    }
+    h3.small {
+      padding: 0;
+    }
+    
+    </style>
+
+	<div id="body">
+	</div>
 
-    <section class="main-content">
-      <h1>
-<a id="competition" class="anchor" href="#competition" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Competition</h1>
-
-<h2>
-<a id="parapy" class="anchor" href="#parapy" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ParaPy</h2>
-
-<p>ParaPy is a Python module which allows the user to write a Python function and run it on the GPU using the different options allowed. These options include parallelizing within a single Python function as well as standard operations such as map and reduce for a single Python function across a collection of elements.</p>
-
-<h2>
-<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
-
-<p><strong>ParaPy</strong> is able to use the NVIDA GPU present in a system due to its 3-stage process. It first breaks down the Python function into its syntax tree using the in-built ast module. Secondly, it uses the elements of the tree to re-construct a CUDA function based on option passed in. Lastly, it will compile and run the newly created CUDA function in a separate file. </p>
-
-<p><strong>Goal:</strong> To provide a simple interface to allow the user to use data parallel models to increase performance by parallelizing across the GPU while only writing functions in standard Python syntax.</p>
-
-<h2>
-<a id="current-results" class="anchor" href="#current-results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Current Results</h2>
-
-<p><strong>1)</strong> We are able to allow the user to parallelize for loops in their Python function using the GPU.</p>
-
-<p><strong>2)</strong> We are able to allow the user to map a Python function to a collection of elements using the GPU. </p>
-
-<hr>
-
-<h1>
-<a id="checkpoint" class="anchor" href="#checkpoint" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Checkpoint</h1>
-
-<h3>
-<a id="work-so-far" class="anchor" href="#work-so-far" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Work So Far</h3>
-
-<p><strong>Read and understood Python libraries which support processing of Python syntax grammar to parse simple functions</strong></p>
-
-<p>Our current program now allows us to parse simple python code using the python ast and inspect modules. We are able to break down the function into its full syntax tree. However, due to the limitations of the ast module, and the innate differences between Python and C++, the conversion process is not straightforward. One example is that the ast module does not recognize parentheses, thus mathematical instructions that require operations inside parentheses to be completed first will not be translated correctly. </p>
-
-<p>To overcome this, we found a astor module, which is a newer module with additional functionality. We need to work integrating this into our current program.</p>
-
-<p><strong>Started to write the formatter class to convert parsed Python code to C++ code</strong></p>
-
-<p>We started work on the formatter class to convert the parsed function into C++, CUDA and OpenMp code. We have finishing handling the conversion to C++ code and have verified that it compiles. Our current program is able to handle calls to the math library, arithmetic operations and simple assignments. </p>
-
-<p><strong>Configured and Understood the semantics of CUDA</strong></p>
-
-<p>We have also read through various examples of CUDA functions as well as understood what is needed for CUDA to compile. This will help us as we try to format the parsed code into a CUDA file.</p>
-
-<h3>
-<a id="currently-working-on" class="anchor" href="#currently-working-on" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Currently Working On</h3>
-
-<p><strong>Generate CUDA kernel code without errors given Python function which meets basic requirements (only arithmetic operations and no function calls within a function)</strong></p>
-
-<p>We are currently working on getting our parser to work on a broader set of functions. Since we want to generate CUDA kernel code for Python functions which have high arithmetic intensity and scope for parallel implementation. An example of such a function would be to mapping a computationally intensive function onto a large array. We are working towards successfully generating C++ code and CUDA kernel code for such a function by this week.</p>
-
-<h3>
-<a id="deliverable" class="anchor" href="#deliverable" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Deliverable</h3>
-
-<p><strong>Compile module on the Mandelbrot function and compare speedup to standard Python implementation</strong></p>
-
-<p>We will be slightly behind our projected schedule for working on this item. However, we understand this to be our main achievement goal for this project. This is will really test the validity of what we have worked on in the previous weeks and we foresee having to go back and make many adjustments. Hence we believe that if we can achieve this target, we can start to tweak our project for better speed up, larger scope of functions and adding OpenMP functionality, which are our stretch goals.</p>
-
-<h3>
-<a id="new-schedule" class="anchor" href="#new-schedule" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>New Schedule</h3>
-
-<pre><code>April 4 - 10
--Read and understand Python libraries which support processing of Python syntax grammar
--Write the parser functions using the Python libraries as the first step for our module
-
-April 11 - 17
--Write the parser functions using the Python libraries as the first step for our module
--Generate C++ code without errors given Python function which meets basic requirements (only arithmetic operations and function             calls within a function)
--Work on checkpoint report
-
-April 19 - 24
--Generate CUDA kernel code without errors given Python function which mimics high arithmetic intensity and sufficient scope for parallelism [Ram]
--Tweak Mandelbrot function to satisfy our program restrictions [Arul]
-
-April 25 - 30
--Generate CUDA kernel code correctly for the Mandelbrot function [Ram]
--Write Compiler class to compile module on the Mandelbrot function using Python FFI [Arul]
-
-May 1 - 3
--Compare speedup to standard Python implementation [Ram]
--Produce graphs for comparison [Arul]
-
-May 4 - 7
--Add functionality for higher control over block dimensions of CUDA kernel [Ram]
--Start working on integrating OpenMP code if times permits [Arul]
--Finalise the module compiler and fix any bugs [Ram]
-</code></pre>
-
-<hr>
-
-<h1>
-<a id="proposal" class="anchor" href="#proposal" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Proposal</h1>
-
-<h3>
-<a id="team-members" class="anchor" href="#team-members" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Team Members</h3>
-
-<p>Arulnithi Sundaramoorthy (arulnits)</p>
-
-<p>Ram Verma (ramv)</p>
-
-<h3>
-<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Summary</h3>
-
-<p>We are going to implement a Python module which takes Python code and translates it to C++ code targeting a CUDA compiler for the execution of the code.</p>
-
-<h3>
-<a id="background" class="anchor" href="#background" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Background</h3>
-
-<p>Python is a widely used, general purpose, interpreted programming language whose code allows users to express concepts in fewer lines of code as compared to C++ or Java. However, Python suffers from being slow due to its Global Interpreter Lock (GIL) which does not allow multi-threading. </p>
-
-<p>To combat this, there are many libraries which exist to allow multi-threading in Python such as processing which is a fork based process creation tool and Cython which allows calls to C libraries for parallelism. Moreover, ParaPy allows the user to type in C as part of a larger Python program to harness the power of GPUs. However, most of these tools are either restricted by the GIL or require some form of C/C++ code on top of Python code. </p>
-
-<hr>
-
-<p>Thus, we want to have a module which allows you to write standard Python syntax code and use just the methods of our module to harness the full potential of GPUs. </p>
-
-<hr>
-
-<h3>
-<a id="the-challenge" class="anchor" href="#the-challenge" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The Challenge</h3>
-
-<p>There are many challenges associated with the project. We will have to correctly translate Python code to C++ CUDA code. This is a challenging task given the nature of both languages. Python is dynamically typed, meaning that there is no static type information available. We will require the user to confirm to certain restrictions ( not calling nested functions, using data of a singular primitive types, declaring type information before hand). </p>
-
-<p>Another challenge is CUDA’s distinction between device memory and host memory, and also the availability of shared memory to achieve even greater speed up. Python only has one type of memory, and hence we need to identify when and how such memory needs to be allocated. We plan to take care of device and host memory transfers, and disregard potential speedups achieved from shared memory optimizations. </p>
-
-<h3>
-<a id="resources" class="anchor" href="#resources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Resources</h3>
-
-<p>We are planning to use several built in modules that allow for source code manipulation.The <em>Inspect module</em> provides several useful functions to help get information about live objects such as classes and functions and retrieve their source code. The <em>AST module</em> then allows us to generate an abstract syntax tree from this Python source code. We would then proceed to generate compliable C++ CUDA code using the above information.</p>
-
-<h3>
-<a id="goals-and-deliverables" class="anchor" href="#goals-and-deliverables" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Goals and Deliverables</h3>
-
-<h4>
-<a id="plan-to-achieve" class="anchor" href="#plan-to-achieve" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>PLAN TO ACHIEVE</em>
-</h4>
-
-<p>We plan to have a completed Python module compiler which generates and compiles CUDA code for written Python code. The compiler should support arithmetic and boolean operations as well as libraries common to Python and C++.  </p>
-
-<h4>
-<a id="hope-to-achieve" class="anchor" href="#hope-to-achieve" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>HOPE TO ACHIEVE</em>
-</h4>
-
-<p>If we are able to complete the module compiler for CUDA, we plan to introduce finer level of control over the kernel calls in the compiler. We would also like to look into support for CPU parallelism by generating C++ code which uses OpenMP.</p>
-
-<h3>
-<a id="platform-choice" class="anchor" href="#platform-choice" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Platform Choice</h3>
-
-<p>We chose Python due to its simplicity and availability of multiple libraries for source code parsing. By having a module such as ParaPy, we hope to combine the simplicity of Python with the speed of C++.</p>
-
-<p>We will be using the GHC 5000 machines with NVIDIA GPUs for design verification and testing since the NVIDIA compiler (nvcc) has already been set up on the machines.</p>
-
-<h3>
-<a id="schedule" class="anchor" href="#schedule" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Schedule</h3>
-
-<pre><code>April 4th - 10th
--Read and understand Python libraries which support processing of Python syntax grammar
--Write the parser functions using the Python libraries as the first step for our module
-
-April 11th - 17th
--Generate CUDA kernel code without errors given Python function which meets basic requirements 
--Basic requirements include only arithmetic operations and no function calls within a function
--Work on checkpoint report
-
-April 18th - 24th
--Compile module on the Mandelbrot function and compare speedup to standard Python implementation
--Produce graphs for comparison 
-
-April 25th - 30th
--Add more functionality to support generic library calls for the compiler
--Start working on generating OpenMP code if times permits
-
-May 1st - 7th
--Finalize the module compiler and fix any bugs
--Work on report and website
-</code></pre>
-
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/ramverma92/418project">ParaPy</a> is maintained by <a href="https://github.com/ramverma92">ramverma92</a>.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
-
-    </section>
-
-  
   </body>
 </html>
