@@ -6,7 +6,8 @@
 
 
 <h3>
-	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary
+	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+	<b>Summary</b>
 </h3>
 
 <p>ParaPy is a Python module which allows the user to write a Python function and run it on the GPU using different options. These options include parallelizing by unravelling for loops as well as standard operations such as map across a collection of elements.</p>
@@ -14,7 +15,8 @@
 
 
 <h3>
-	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>Background
+	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+	<b>Background</b>
 </h3>
 
 <p>Python is a simple and elegant language which usually requires lesser lines of code as compared to C or C++. However, Python is extremely slow in its execution due to its Global Interpreter Lock which makes parallelization of code hard. Currently, Python has some process-based and fork-based parallel libraries available. It, does not have any modules which allow the user to utilize the system's GPU.</p>
@@ -24,7 +26,8 @@
 
 
 <h3>
-	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>Approach
+	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+	<b>Approach</b>
 </h3>
 
 <p>Our approach involved breaking down the problem into 3 parts. We first had to take the Python function and understand its syntax. This would facilitate the idea that the user does not have to modify his Python code for the GPU. With that understanding, we had to then reformat the function into the appropriate type of code. This would usually be a .cu file. Lastly, our module would automate the compilation and execution of the newly generated file.</p>
@@ -44,7 +47,8 @@
 
 
 <h3>
-	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example
+	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+	<b>Example</b>
 </h3>
 
 <div class = "box" align= "center">
@@ -56,23 +60,47 @@
 
 
 <h3>
-	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>Results
+	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+	<b>Results</b>
 </h3>
 
+<p>We wrote two functions, the <i>mandelbrot</i> and <i>saxpy</i> in order to test our module. Our aim was to ensure that our module worked and that there was significant speedup to verify feasibility of the module.</p>
 
+<div class = "box" align= "center">
+	<img src="mandelshot.png" />
+</div>
 
+<p>We ran a CUDA_MAP flag with the mandelBrot function. Based on the graph shown above, where the y-axis is time in milliseconds, we see that such a non-bandwidth bound function did in fact perform better with our module compared to numPy and Python's map function. While this is not a module where we try to obtain a perfect speed-up, we were shown with the results that a simple Python function could be made faster without the user having to write any CUDA code. Below is a image generated with our module:</p>
+
+<div class = "box" align= "center">
+	<img src="mandel.ppm" />
+</div>
+
+<p>Similarly, we ran saxpy and obtained similar results. As seen from the graph below, the overhead with our module was significant since saxpy is a memory bound function. However, the execution time is still smaller, proving that our module is a good choice for someone who wished to run functions on CPU but use Python.</p>
+
+<div class = "box" align= "center">
+	<img src="saxpyshot.png" />
+</div>
 
 
 
 <h3>
-	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>Limitations
+	<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+	<b>Limitations</b>
 </h3>
 
+<ol type="1">
+
+<li>Due to the nature of the Parser class, ParaPy is only able to support a certain subset of Python types. This is due to the fact that each type had to be dealt with seperately and we decided to choose a subset which would allow for us to run the common parallel functions such as mandelbrot and saxpy.</li>
+
+<li>Another limitaiton was that since the Formatter class had to write the new file completely, it has been messy to add multiple flags to support finer level of control for the user.</li>
+
+<li>Since Python is written sequentially, it is hard to support certain methods such as reduce since the idea of this module is to have as little deviation for the Python code as possible.</li>
+
+</ol>
 
 
-
-
-<p>Equal work was performed by both project members.</p>
+<p><i>Equal work was performed by both project members.</i></p>
 
 
 <footer class="site-footer">
