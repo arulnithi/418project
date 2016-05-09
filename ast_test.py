@@ -1,5 +1,5 @@
 import math
-
+import time
 #TESTTING ACTUAL
 #blah blah
 # def foo(brg1,arg2):
@@ -61,14 +61,23 @@ import math
 
 
 
+def mandelbrotPy(c_re,c_im,maxiter=2048):
+	z_re = c_re
+	z_im = c_im
+	for i in xrange(maxiter):
+		if (z_re * z_re + z_im * z_im > 4.0):
+			return i
+		new_re = z_re*z_re - z_im*z_im
+		new_im = 2 * z_re * z_im
+		z_re = c_re + new_re
+		z_im = c_im + new_im
+	return maxiter
 
-
-def mandelbrot(rArray,iArray,maxiter,height,width,output):
+def mandelDemo(rArray,iArray,maxiter,height,width,output):
 	c_re = rArray[index]
 	c_im = iArray[index]
 	z_re = c_re
 	z_im = c_im
-	result = 0
 	for i in xrange(maxiter):
 		if (z_re * z_re + z_im * z_im > 4.0):
 			output[index]= i
@@ -82,13 +91,13 @@ def mandelbrot(rArray,iArray,maxiter,height,width,output):
 #  #CUDA-MAP
 
 from compiler import *
-maxiter = 80
+maxiter = 2048
 x0 = -2.0
 x1 = 0.5
 y0 = -1.25
 y1 = 1.25
-height = 100
-width = 100
+height = 500
+width = 500
 dx = (x1-x0)/height
 dy = (y1-y0)/width
 rArray = []
@@ -100,6 +109,24 @@ for x in xrange(0,height):
 		iArray.append(y0 + dy*y)
 
 output = []
-c = Compiler("CUDA-MAP",mandelbrot,length,rArray,iArray,maxiter,height,width,output)
-c.printCodeString()
+startCuda = time.clock()
+c = Compiler("CUDA-MAP",mandelDemo,length,rArray,iArray,maxiter,height,width,output)
+endCuda = (time.clock()-startCuda)*1000
+
+startPyMap = time.clock()
+pyResult = map(mandelbrotPy,rArray,iArray)
+endPyMap = (time.clock()-startPyMap)*1000
+
+startPyFor = time.clock()
+pyForResult = []
+for i in xrange(0,length):
+	pyForResult.append(mandelbrotPy(rArray[i],iArray[i],maxiter))
+endPyFor = (time.clock()-startPyFor)*1000
+
+
+print("CUDA:%d, MAP:%d, FOR:%d"%(endCuda,endPyMap,endPyFor))
+
+
+
+#c.printCodeString()
 

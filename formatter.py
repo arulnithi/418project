@@ -350,9 +350,9 @@ class Formatter:
     cudaMalloc = []  #to add a character at the end to differentiate the variable from malloc
     free = []
     N = self.parser.length
-    #########################################
-    blocksize = 128  ########################  To be changed based on GPU being used
-    #########################################
+    ####################################################################################
+    blocksize = 128  ########################  To be changed based on GPU being used ###
+    ####################################################################################
     for x in xrange(len(self.parser.argValueList)):
       if x != 0:
         args += ","
@@ -375,7 +375,7 @@ class Formatter:
     #add the main function now
     self.add("int main() {")
     self.indent(1)
-    self.add('printf("STARTING MAIN FUNCTION\\n");')
+    self.add('printf("STARTING CUDA FUNCTION\\n");')
     self.add("")
     self.add("//Define constants to use")
     self.add("const int N = %d;"%N)
@@ -427,7 +427,7 @@ class Formatter:
     #free memory  
     for f in free:
       self.add(f)
-
+    self.add('printf("ENDING CUDA FUNCTION\\n");')
     #return
     self.add("return 0;")
     self.indent(-1)
