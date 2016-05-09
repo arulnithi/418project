@@ -19,6 +19,8 @@ class Formatter:
       self.parser = args[0]
       #the list to be parsed
       self.originalBodyList = args[0].bodyList
+      #specified blockSize
+      self.blocksize = args[2]
       #the output code in a string
       self.codeString = "" 
       self.indentLevel = 0
@@ -106,6 +108,8 @@ class Formatter:
     self.add("#include <stdlib.h>")
     self.add('#include <iostream>')
     self.add('#include <algorithm>')
+    self.add('#include <cstudio>')
+    self.add('#include <ctime>')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -207,6 +211,8 @@ class Formatter:
     self.add("#include <stdlib.h>")
     self.add('#include <iostream>')
     self.add('#include <algorithm>')
+    self.add('#include <cstudio>')
+    self.add('#include <ctime>')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -335,6 +341,8 @@ class Formatter:
     self.add("#include <stdlib.h>")
     self.add('#include <iostream>')
     self.add('#include <algorithm>')
+    self.add('#include <cstudio>')
+    self.add('#include <ctime>')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -350,9 +358,7 @@ class Formatter:
     cudaMalloc = []  #to add a character at the end to differentiate the variable from malloc
     free = []
     N = self.parser.length
-    ####################################################################################
-    blocksize = 128  ########################  To be changed based on GPU being used ###
-    ####################################################################################
+    blocksize = self.blockSize
     for x in xrange(len(self.parser.argValueList)):
       if x != 0:
         args += ","
@@ -405,8 +411,13 @@ class Formatter:
     #INCLUDE MAX NO THREADS  >>> dim3 numBlocks((MAX_NO_OF_THREADS-1+numCircles)/MAX_NO_OF_THREADS);
     self.add("dim3 dimGrid( ((N + blocksize - 1) / blocksize), 1 );")
 
+    #timer
+    self.add('std::clock_t start;')
+    self.add('double duration;')
+    self.add('start = std::clock();')
     #call the function
     self.add("%s<<<dimGrid, dimBlock>>>(%s);"%(self.parser.functionName,args))
+    self.add('duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;')
     self.add("")
     self.add("//Copy back result data")
     self.add("cudaMemcpy(%s, %s, N * sizeof(float), cudaMemcpyDeviceToHost);"%(str(self.parser.argList[len(self.parser.argValueList)-1]),str(self.parser.argList[len(self.parser.argValueList)-1])+"Cuda"))
@@ -428,6 +439,7 @@ class Formatter:
     for f in free:
       self.add(f)
     self.add('printf("ENDING CUDA FUNCTION\\n");')
+    std::cout<<"printf: "<< duration <<'\n';
     #return
     self.add("return 0;")
     self.indent(-1)

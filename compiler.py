@@ -23,11 +23,16 @@ class Compiler:
 	def __init__(self, *args):
 		#read arguments
 		self.option = args[0]
-		self.parseOptions = list(args[1:])
+		self.blockSize = args[1]
+		if self.blockSize > 512:
+			raise Exception("Block size greater than 512 %s"%self.blockSize)
+		if self.blockSize == 0:
+			self.blockSize = 128
+		self.parseOptions = list(args[2:])
 		#call the parser
 		self.parser = Parser(self.parseOptions)
 		#call the formatter
-		self.formatted = Formatter(self.parser, self.option)
+		self.formatted = Formatter(self.parser, self.option, self.blockSize)
 		#the file name to be compiled
 		self.fileName = ""
 

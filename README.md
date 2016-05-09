@@ -32,16 +32,17 @@ To use the ParaPy module:
 
 	The inputs to the Compiler class are:
 
-	Compiler(option, fn name, array max length, argument1, argument2,...)
+	Compiler(option, GPU_blocksize(default set to 128), fn name, array max length, argument1, argument2,...)
 
 4) Naming:
 
 	Name your output array (if any) to be 'output'
 	Put the output input argument as the last argument
 
-	MandelBrot CUDA-MAP:
+	MandelBrot CUDA-MAP (to generate mandel.ppm):
 	Using naming conventions:
-	-maxiter,height,width
+	-maxiter,height,width for the arguments
+	-ensure name of function to have mandelbrot somewhere in it
 
 
 ## Options
