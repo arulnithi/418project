@@ -439,7 +439,7 @@ class Formatter:
     for f in free:
       self.add(f)
     self.add('printf("ENDING CUDA FUNCTION\\n");')
-    std::cout<<"printf: "<< duration <<'\n';
+    self.add('std::cout<<"printf: "<< duration <<\\n;')
     #return
     self.add("return 0;")
     self.indent(-1)
