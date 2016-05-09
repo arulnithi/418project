@@ -387,17 +387,19 @@ class Parser:
 
 
   def bodyHandlerReturn(self, body):
-  	returnList = []
-  	returnList.append("")
-  	returnList[0] += "return "
-  	if isinstance(body.value, ast.BinOp):
-  		returnList[0] += self.binOpsParser(body.value)
-  	else:
-  		returnList[0] += self.bodyHandlerLiterals(body.value)[0]
+    returnList = []
+    returnList.append("")
+    returnList[0] += "return "
+    if isinstance(body.value, ast.BinOp):
+      returnList[0] += self.binOpsParser(body.value)
+    else:
+      returnList[0] += self.bodyHandlerLiterals(body.value)[0]
+      if self.bodyHandlerLiterals(body.value)[0] == 'None':
+        returnList[0] = 'return '
   	returnList[0] += ";"
   	#for the firstLine
   	if self.returnType == "":
-	  	if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num):
+	  	if (isinstance(body.value, ast.Name) and body.value.id != 'None') or isinstance(body.value, ast.Num):
 	  		self.returnType += "float "
 	  	elif isinstance(body.value, ast.List):
 	  		self.returnType += "float* "

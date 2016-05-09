@@ -32,8 +32,8 @@ class Compiler:
 		self.fileName = ""
 
 		#execute the functions needed to compile
-		self.writeToFile()
-		self.buildFile()
+		# self.writeToFile()
+		# self.buildFile()
 
 
 	#prints the output string to be written onto file

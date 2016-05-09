@@ -416,7 +416,7 @@ class Formatter:
     tempName = self.parser.functionName.lower()
     if 'mandelbrot' in tempName:
       self.add('//Print out mandel image')
-      self.add('mandel();')
+      self.add('mandel(output);')
       self.add('')
 
     self.add("")
@@ -470,7 +470,7 @@ class Formatter:
   def mandelFunctionCUMAP(self):
     self.add('')
     self.add('//Call the PPIF function if needed') #Explain function
-    self.add('void mandel() {') #Start of function
+    self.add('void mandel(float* output) {') #Start of function
     self.indent(1)
     #maxiter,height,width
     w = '0'
