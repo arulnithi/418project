@@ -73,7 +73,7 @@
 <p>We ran a CUDA_MAP flag with the mandelBrot function. Based on the graph shown above, where the y-axis is time in milliseconds, we see that such a non-bandwidth bound function did in fact perform better with our module compared to numPy and Python's map function. While this is not a module where we try to obtain a perfect speed-up, we were shown with the results that a simple Python function could be made faster without the user having to write any CUDA code. Below is a image generated with our module:</p>
 
 <div class = "box" align= "center">
-	<img src="mandel.ppm" />
+	<img src="mandel.png" />
 </div>
 
 <p>Similarly, we ran saxpy and obtained similar results. As seen from the graph below, the overhead with our module was significant since saxpy is a memory bound function. However, the execution time is still smaller, proving that our module is a good choice for someone who wished to run functions on CPU but use Python.</p>
