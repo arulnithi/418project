@@ -1,89 +1,100 @@
-<h2>
-<a id="proposal" class="anchor" href="#proposal" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Proposal</h2>
+    <section class="main-content">
+      <h2>
+<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a><b>Proposal</b></h2>
+
+<h3>Summary</h3>
+ 
+
+  
+
+<p> We are going to implement a Python module which takes Python code and translates it to C++ code targeting a CUDA compiler for the execution of the code.</p>
 
 <h3>
-<a id="team-members" class="anchor" href="#team-members" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Team Members</h3>
-
-<p>Arulnithi Sundaramoorthy (arulnits)</p>
-
-<p>Ram Verma (ramv)</p>
-
-<h3>
-<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Summary</h3>
-
-<p>We are going to implement a Python module which takes Python code and translates it to C++ code targeting a CUDA compiler for the execution of the code.</p>
-
-<h3>
-<a id="background" class="anchor" href="#background" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Background</h3>
+<a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Background</h3>
 
 <p>Python is a widely used, general purpose, interpreted programming language whose code allows users to express concepts in fewer lines of code as compared to C++ or Java. However, Python suffers from being slow due to its Global Interpreter Lock (GIL) which does not allow multi-threading. </p>
 
 <p>To combat this, there are many libraries which exist to allow multi-threading in Python such as processing which is a fork based process creation tool and Cython which allows calls to C libraries for parallelism. Moreover, ParaPy allows the user to type in C as part of a larger Python program to harness the power of GPUs. However, most of these tools are either restricted by the GIL or require some form of C/C++ code on top of Python code. </p>
 
-<hr>
-
 <p>Thus, we want to have a module which allows you to write standard Python syntax code and use just the methods of our module to harness the full potential of GPUs. </p>
 
-<hr>
-
 <h3>
-<a id="the-challenge" class="anchor" href="#the-challenge" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The Challenge</h3>
-
+<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Challenge</h3>
 <p>There are many challenges associated with the project. We will have to correctly translate Python code to C++ CUDA code. This is a challenging task given the nature of both languages. Python is dynamically typed, meaning that there is no static type information available. We will require the user to confirm to certain restrictions ( not calling nested functions, using data of a singular primitive types, declaring type information before hand). </p>
 
 <p>Another challenge is CUDA’s distinction between device memory and host memory, and also the availability of shared memory to achieve even greater speed up. Python only has one type of memory, and hence we need to identify when and how such memory needs to be allocated. We plan to take care of device and host memory transfers, and disregard potential speedups achieved from shared memory optimizations. </p>
 
 <h3>
-<a id="resources" class="anchor" href="#resources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Resources</h3>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Resources</h3>
 
-<p>We are planning to use several built in modules that allow for source code manipulation.The <em>Inspect module</em> provides several useful functions to help get information about live objects such as classes and functions and retrieve their source code. The <em>AST module</em> then allows us to generate an abstract syntax tree from this Python source code. We would then proceed to generate compliable C++ CUDA code using the above information.</p>
-
-<h3>
-<a id="goals-and-deliverables" class="anchor" href="#goals-and-deliverables" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Goals and Deliverables</h3>
-
-<h4>
-<a id="plan-to-achieve" class="anchor" href="#plan-to-achieve" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>PLAN TO ACHIEVE</em>
-</h4>
-
-<p>We plan to have a completed Python module compiler which generates and compiles CUDA code for written Python code. The compiler should support arithmetic and boolean operations as well as libraries common to Python and C++.  </p>
-
-<h4>
-<a id="hope-to-achieve" class="anchor" href="#hope-to-achieve" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>HOPE TO ACHIEVE</em>
-</h4>
-
-<p>If we are able to complete the module compiler for CUDA, we plan to introduce finer level of control over the kernel calls in the compiler. We would also like to look into support for CPU parallelism by generating C++ code which uses OpenMP.</p>
+<p>We are planning to use several built in modules that allow for source code manipulation.The Inspect module provides several useful functions to help get information about live objects such as classes and functions and retrieve their source code. The AST module then allows us to generate an abstract syntax tree from this Python source code. We would then proceed to generate compliable C++ CUDA code using the above information.</p>
 
 <h3>
-<a id="platform-choice" class="anchor" href="#platform-choice" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Platform Choice</h3>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Goals and Deliverables</h3>
+<ul style="list-style: none;">
+<li><h4>Plan to achieve</h4> 
+  <p>We plan to have a completed Python module compiler which generates and compiles CUDA code for written Python code. The compiler should support arithmetic and boolean operations as well as libraries common to Python and C++.  </p></li>
+<li><h4>Hope to achieve</h4> 
+  <p>If we are able to complete the module compiler for CUDA, we plan to introduce finer level of control over the kernel calls in the compiler. We would also like to look into support for CPU parallelism by generating C++ code which uses OpenMP.</p></li>
+</ul>
 
+<h3>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Platform Choice</h3>
 <p>We chose Python due to its simplicity and availability of multiple libraries for source code parsing. By having a module such as ParaPy, we hope to combine the simplicity of Python with the speed of C++.</p>
 
 <p>We will be using the GHC 5000 machines with NVIDIA GPUs for design verification and testing since the NVIDIA compiler (nvcc) has already been set up on the machines.</p>
 
 <h3>
-<a id="schedule" class="anchor" href="#schedule" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Schedule</h3>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Schedule</h3>
 
-<pre><code>April 4th - 10th
--Read and understand Python libraries which support processing of Python syntax grammar
--Write the parser functions using the Python libraries as the first step for our module
+<table class="pure-table pure-table-horizontal">
+    <thead>
+        <tr bgcolor="#f0f0f0">
+            <th>#</th>
+            <th>Date</th>
+            <th>Objective</th>
+            <th>Description</th>
+        </tr>
+    </thead>
 
-April 11th - 17th
--Generate CUDA kernel code without errors given Python function which meets basic requirements 
--Basic requirements include only arithmetic operations and no function calls within a function
--Work on checkpoint report
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td nowrap= "nowrap">April 4th - 10th</td>
+            <td>Understand Python Compiler </td>
+            <td>Read and understand Python libraries which support processing of Python syntax grammar. Write the parser functions using the Python libraries as the first step for our module.</td>
+        </tr>
 
-April 18th - 24th
--Compile module on the Mandelbrot function and compare speedup to standard Python implementation
--Produce graphs for comparison 
+        <tr bgcolor="#f0f0f0">
+            <td>2</td>
+            <td nowrap= "nowrap">April 11th - 17th</td>
+            <td>Generate CUDA code</td>
+            <td>Generate CUDA kernel code without errors given Python function which meets basic requirements. Basic requirements include only arithmetic operations and no function calls within a function. Work on checkpoint report.</td>
+        </tr>
 
-April 25th - 30th
--Add more functionality to support generic library calls for the compiler
--Start working on generating OpenMP code if times permits
+        <tr>
+            <td>3</td>
+            <td nowrap="nowrap">April 18th - 24th</td>
+            <td>Start Compiler</td>
+            <td>Compile module on the Mandelbrot function and compare speedup to standard Python implementation. Produce graphs for comparison. </td>
+        </tr>
 
-May 1st - 7th
--Finalize the module compiler and fix any bugs
--Work on report and website
-</code></pre>
+        <tr bgcolor="#f0f0f0">
+            <td>4</td>
+            <td nowrap="nowrap">April 25th - 30th</td>
+            <td>Add functionality</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>5</td>
+            <td nowrap="nowrap">May 1st - 7th</td>
+            <td>Exam Preparation</td>
+            <td>Finalize the module compiler and fix any bugs. Work on report and website.</td>
+        </tr>
+    </tbody>
+</table>
+
 
 
 
