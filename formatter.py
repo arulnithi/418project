@@ -31,7 +31,7 @@ class Formatter:
         self.formatTopLevelCPP()
         self.formatBodyLevelCPP(self.originalBodyList)
         self.formatBotLevelCPP()
-      elif option == "CUDA":
+      elif option == "CUDA-FOR":
         self.formatTopLevelCU()
         self.formatBodyLevelCU(self.originalBodyList)
         self.formatBotLevelCU()
@@ -404,7 +404,6 @@ class Formatter:
     for name in cudaMalloc:
       self.add("cudaMalloc( (void**)&%s, csize );"%(name + "Cuda"))
     #cudaMemCpy
-    self.add("double t1 = CycleTimer::currentSeconds();")
     #call the function
     for i in xrange(0,len(cudaMalloc)-1):
       name = cudaMalloc[i]
@@ -417,12 +416,14 @@ class Formatter:
     self.add("dim3 dimGrid( ((N + blocksize - 1) / blocksize), 1 );")
 
     #timer
+    self.add("double t1 = CycleTimer::currentSeconds();")
     self.add("%s<<<dimGrid, dimBlock>>>(%s);"%(self.parser.functionName,args))
+    self.add("double t2 = CycleTimer::currentSeconds();")
     self.add("")
     self.add("//Copy back result data")
     self.add("cudaMemcpy(%s, %s, N * sizeof(float), cudaMemcpyDeviceToHost);"%(str(self.parser.argList[len(self.parser.argValueList)-1]),str(self.parser.argList[len(self.parser.argValueList)-1])+"Cuda"))
     self.add("")
-    self.add("double t2 = CycleTimer::currentSeconds();")
+    
 
     #for mandelbrot
     tempName = self.parser.functionName.lower()

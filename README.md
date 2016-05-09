@@ -38,6 +38,7 @@ To use the ParaPy module:
 
 	Name your output array (if any) to be 'output'
 	Put the output input argument as the last argument
+	Use 'index' for array access for CUDA kernels
 
 	MandelBrot CUDA-MAP (to generate mandel.ppm):
 	Using naming conventions:
@@ -48,7 +49,7 @@ To use the ParaPy module:
 ## Options
 ### 'CPP'
 	- standard conversion of Python code to C++ code
-### 'CUDA'
+### 'CUDA-FOR'
 	- will take any for loop with variable name == 'x'
 	- will parallelize that for loop within the function
 	- blocksize is set to array max length
