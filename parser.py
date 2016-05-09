@@ -271,6 +271,9 @@ class Parser:
       returnString += self.bodyHandlerAttribute(body)
       return (returnString, None)
 
+    elif isinstance(body, ast.None):
+      return (returnString, None)
+
     #Unknown Literal
     else:
       raise Exception("Literal not supported: %s"%(body))
@@ -422,9 +425,9 @@ class Parser:
           returnList.append(self.binOpsParser(target))
 
       elif isinstance(target, ast.Name):
-        if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num) or isinstance(body.value, ast.BinOp):
+        if isinstance(body.value, ast.Name) or isinstance(body.value, ast.Num) or isinstance(body.value, ast.BinOp) or isinstance(body.value, ast.Subscript):
           if self.bodyHandlerLiterals(target)[0] not in self.typeCastedList:
-            returnList.append("int ")
+            returnList.append("float ")
             returnList[0] += (self.bodyHandlerLiterals(target)[0])
             self.typeCastedList.append(self.bodyHandlerLiterals(target)[0])
           else:

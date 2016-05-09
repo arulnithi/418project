@@ -36,6 +36,8 @@ class Formatter:
       elif option == "CUDA-MAP":
         self.formatTopLevelCUMAP()
         self.formatBodyLevelCUMAP(self.originalBodyList)
+        self.PPIFunctionCUMAP()
+        self.mandelFunctionCUMAP()
         self.formatBotLevelCUMAP()
       else:
         raise Exception("Formatting option not available (%s)"%option)
@@ -103,6 +105,7 @@ class Formatter:
     self.add("#include <math.h>")
     self.add("#include <stdlib.h>")
     self.add('#include <iostream>')
+    self.add('#include <algorithm>')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -168,7 +171,7 @@ class Formatter:
           self.add("__global__ " + element)
           #add checker for threadIdx.x
           self.indent(1)
-          self.add("if (threadIdx.x > %s) {"%self.parser.length)
+          self.add("if (threadIdx.x >= %s) {"%self.parser.length)
           self.indent(1)
           self.add("return;")
           self.indent(-1)
@@ -203,6 +206,7 @@ class Formatter:
     self.add("#include <math.h>")
     self.add("#include <stdlib.h>")
     self.add('#include <iostream>')
+    self.add('#include <algorithm>')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -302,7 +306,7 @@ class Formatter:
           self.indent(1)
           newElement = "int index = blockIdx.x * blockDim.x + threadIdx.x;"
           self.add(newElement)
-          self.add("if (index > %s) {"%self.parser.length)
+          self.add("if (index >= %s) {"%self.parser.length)
           self.indent(1)
           self.add("return;")
           self.indent(-1)
@@ -330,6 +334,7 @@ class Formatter:
     self.add("#include <math.h>")
     self.add("#include <stdlib.h>")
     self.add('#include <iostream>')
+    self.add('#include <algorithm>')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -406,6 +411,15 @@ class Formatter:
     self.add("//Copy back result data")
     self.add("cudaMemcpy(%s, %s, N * sizeof(float), cudaMemcpyDeviceToHost);"%(str(self.parser.argList[len(self.parser.argValueList)-1]),str(self.parser.argList[len(self.parser.argValueList)-1])+"Cuda"))
     self.add("")
+
+    #for mandelbrot
+    tempName = self.parser.functionName.lower()
+    if 'mandelbrot' in tempName:
+      self.add('//Print out mandel image')
+      self.add('mandel();')
+      self.add('')
+
+    self.add("")
     self.add("//Free allocated memory")
     #cudaFree
     for name in cudaMalloc:
@@ -413,10 +427,69 @@ class Formatter:
     #free memory  
     for f in free:
       self.add(f)
+
     #return
     self.add("return 0;")
     self.indent(-1)
     self.add("}")
+
+
+  #for mandel print image
+  def PPIFunctionCUMAP(self):
+    #space
+    self.add('')
+    self.add('')
+    #body
+    self.add('//Function taken from assignment 1, 15-418, CMU')
+    self.add('void writePPMImage(float* data, int width, int height, const char *filename, int maxIterations) {')
+    self.indent(1)
+    self.add('FILE *fp = fopen(filename, "wb");')
+    self.add('fprintf(fp, "P6\\n");')
+    self.add('fprintf(fp, "%d %d\\n", width, height);')
+    self.add('fprintf(fp, "255\\n");')
+    self.add('for (int i = 0; i < width*height; ++i) {')
+    self.indent(1)
+    self.add('float mapped = pow( std::min(static_cast<float>(maxIterations),static_cast<float>(data[i])) / 256.f, .5f);')
+    self.add('unsigned char result = static_cast<unsigned char>(255.f * mapped);')
+    self.add('for (int j = 0; j < 3; ++j)')
+    self.indent(1)
+    self.add('fputc(result, fp);')
+    self.indent(-1)
+    self.indent(-1)
+    self.add('}')
+    self.add('fclose(fp);')
+    self.add('printf("Wrote image file %s\\n", filename);')
+    self.indent(-1)
+    self.add('}')
+    #space
+    self.add('')
+    self.add('')
+
+
+  #for mandel call functions
+  def mandelFunctionCUMAP(self):
+    self.add('')
+    self.add('//Call the PPIF function if needed') #Explain function
+    self.add('void mandel() {') #Start of function
+    self.indent(1)
+    #maxiter,height,width
+    w = '0'
+    h = '0'
+    m = '0'
+    if 'width' in self.parser.argList:
+      w = str(self.parser.argValueList[self.parser.argList.index('width')])
+    if 'height' in self.parser.argList:
+      h = str(self.parser.argValueList[self.parser.argList.index('height')])
+    if 'maxiter' in self.parser.argList:
+      m = str(self.parser.argValueList[self.parser.argList.index('maxiter')])
+    self.add('int width = %s;'%w)
+    self.add('int height = %s;'%h)
+    self.add('int maxiter = %s;'%m)
+    #call the function
+    self.add('writePPMImage(output, width, height, "mandel.ppm", maxiter);')
+    self.indent(-1)
+    self.add('}') #End of function
+    self.add('')
 
 #====================================================================
 #OpenMP

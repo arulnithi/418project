@@ -37,21 +37,69 @@ import math
 # c.printBodyList()
 
 
-#WRITE FUNCTION AS IF IT RUNS ON THE FIRST ELEMENT
-def foo(alpha,x,y,result):
-	index = 0
-	result[index]= alpha * x[index] + y[index]
-	print result[1]
+# #WRITE FUNCTION AS IF IT RUNS ON THE FIRST ELEMENT
+# def foo(alpha,x,y,result):
+# 	index = 0
+# 	result[index]= alpha * x[index] + y[index]
+# 	print "hi"
+	
+# #  #CUDA-MAP
+
+# from compiler import *
+# alpha = 2
+# x = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+# y = [1,2,3,4,2,4,2,63,4,7,4,8,3,1,2,5,1,5,2,2]
+# ret = []
+# c = Compiler("CPP",foo,len(x),alpha,x,y,ret)
+
+# c.printCodeString()
+# # c.printTree()
+
+
+
+
+
+
+
+
+
+def mandelbrot(rArray,iArray,maxiter,height,width,output):
+	c_re = rArray[index]
+	c_im = iArray[index]
+	z_re = c_re
+	z_im = c_im
+	result = 0
+	for i in xrange(maxiter):
+		if (z_re * z_re + z_im * z_im > 4.0):
+			output[index]= i
+			return None
+		new_re = z_re*z_re - z_im*z_im
+		new_im = 2 * z_re * z_im
+		z_re = c_re + new_re
+		z_im = c_im + new_im
+	output[index]= maxiter
 	
 #  #CUDA-MAP
 
 from compiler import *
-alpha = 2
-x = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-y = [1,2,3,4,2,4,2,63,4,7,4,8,3,1,2,5,1,5,2,2]
-ret = []
-c = Compiler("CPP",foo,len(x),alpha,x,y,ret)
+maxiter = 80
+x0 = -2.0
+x1 = 0.5
+y0 = -1.25
+y1 = 1.25
+height = 100
+width = 100
+dx = (x1-x0)/height
+dy = (y1-y0)/width
+rArray = []
+iArray = []
+length = height * width
+for x in xrange(0,height):
+	for y in xrange(0,width):
+		rArray.append(x0+ dx*x)
+		iArray.append(y0 + dy*y)
 
+output = []
+c = Compiler("CUDA-MAP",mandelbrot,length,rArray,iArray,maxiter,height,width,output)
 c.printCodeString()
-# c.printTree()
 

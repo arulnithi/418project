@@ -34,13 +34,26 @@ To use the ParaPy module:
 
 	Compiler(option, fn name, array max length, argument1, argument2,...)
 
+4) Naming:
+
+	Name your output array (if any) to be 'output'
+	Put the output input argument as the last argument
+
+	MandelBrot CUDA-MAP:
+	Using naming conventions:
+	-maxiter,height,width
+
+
 ## Options
 ### 'CPP'
 	- standard conversion of Python code to C++ code
 ### 'CUDA'
 	- will take any for loop with variable name == 'x'
 	- will parallelize that for loop within the function
-	- blocksize is set to *array max length*
+	- blocksize is set to array max length
 ### 'CUDA-MAP'
 	-will translate the Python function to a CUDA function
-	-will run the CUDA function on the collection of elements passed in as a list in *argument1*
+	-will run the CUDA function on the collection of elements passed in as a list in argument1
+
+## Limitations (need to address)
+	-Parser class line 427, need to differentiate between int and float
