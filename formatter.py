@@ -110,6 +110,7 @@ class Formatter:
     self.add('#include <algorithm>')
     self.add('#include <cstdio>')
     self.add('#include <ctime>')
+    self.add('#include "CycleTimer.h"')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -213,6 +214,7 @@ class Formatter:
     self.add('#include <algorithm>')
     self.add('#include <cstdio>')
     self.add('#include <ctime>')
+    self.add('#include "CycleTimer.h"')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -343,6 +345,7 @@ class Formatter:
     self.add('#include <algorithm>')
     self.add('#include <cstdio>')
     self.add('#include <ctime>')
+    self.add('#include "CycleTimer.h"')
     self.add("")
     #add defines
     self.add("#define pi 3.14159265")
@@ -401,6 +404,8 @@ class Formatter:
     for name in cudaMalloc:
       self.add("cudaMalloc( (void**)&%s, csize );"%(name + "Cuda"))
     #cudaMemCpy
+    self.add("double t1 = CycleTimer::currentSeconds();")
+    #call the function
     for i in xrange(0,len(cudaMalloc)-1):
       name = cudaMalloc[i]
       self.add("cudaMemcpy( %s, %s, csize, cudaMemcpyHostToDevice );"%((name + "Cuda"),name))
@@ -412,16 +417,12 @@ class Formatter:
     self.add("dim3 dimGrid( ((N + blocksize - 1) / blocksize), 1 );")
 
     #timer
-    self.add('std::clock_t start;')
-    self.add('double duration;')
-    self.add('start = std::clock();')
-    #call the function
     self.add("%s<<<dimGrid, dimBlock>>>(%s);"%(self.parser.functionName,args))
-    self.add('duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;')
     self.add("")
     self.add("//Copy back result data")
     self.add("cudaMemcpy(%s, %s, N * sizeof(float), cudaMemcpyDeviceToHost);"%(str(self.parser.argList[len(self.parser.argValueList)-1]),str(self.parser.argList[len(self.parser.argValueList)-1])+"Cuda"))
     self.add("")
+    self.add("double t2 = CycleTimer::currentSeconds();")
 
     #for mandelbrot
     tempName = self.parser.functionName.lower()
@@ -439,7 +440,7 @@ class Formatter:
     for f in free:
       self.add(f)
     self.add('printf("ENDING CUDA FUNCTION\\n");')
-    self.add('std::cout<<"printf: "<< duration <<\\n;')
+    self.add('printf("Time: %f\\n",t2-t1);')
     #return
     self.add("return 0;")
     self.indent(-1)
